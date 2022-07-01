@@ -1,0 +1,12 @@
+{
+  "main": "./integration.js",
+  "name": "slack",
+  "version": "3.0.0-beta",
+  "private": true,
+  "license": "MIT",
+  "author": "Polarity",
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "postman-request": "*"
+  }
+}
