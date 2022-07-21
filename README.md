@@ -1,15 +1,15 @@
-# Polarity __TODO__ Integration
+# Polarity Slack Integration
 
 ![image](https://img.shields.io/badge/status-beta-green.svg)
 
-TODO: desc
+The Polarity Slack Integration allows you to *Send Messages to Channels in Slack*, and *Query Slack Channels*.
 
 
 
-To learn more about __TODO__, visit the [official website](__TODO__).
+To learn more about Slack, visit the [official website](https://slack.com/).
 
 
-## __TODO__ Integration Options
+## Slack Integration Options
 __TODO__
 
 ## Installation Instructions

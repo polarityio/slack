@@ -1,21 +1,55 @@
-const { isEmpty } = require('lodash/fp');
+const { isEmpty, keys } = require('lodash/fp');
 const reduce = require('lodash/fp/reduce').convert({ cap: false });
+const getSlackChannels = require('./getSlackChannels');
 
-const validateOptions = (options, callback) => {
+const validateOptions = (requestWithDefaults) => async (options, callback) => {
   const stringOptionsErrorMessages = {
-    //TODO
+    url: 'You must provide a valid Slack URL',
+    userToken: 'You must provide a valid Slack User Token',
+    botToken: 'You must provide a valid Slack Bot Token'
   };
 
   const stringValidationErrors = _validateStringOptions(
     stringOptionsErrorMessages,
     options
   );
-  
+
   const urlValidationErrors = _validateUrlOption(options.url);
 
+  let errors = stringValidationErrors.concat(urlValidationErrors);
   
-  callback(null, stringValidationErrors.concat(urlValidationErrors));
+  //TODO: channel option validation for a comma separated list with no spaces in channel name, and that channel names can be found in the channel list
+  
+  // if (!errors.length) {
+  //   const formattedOptions = reduce(
+  //     (agg, key) => ({ ...agg, [key]: get([key, 'value'], options) }),
+  //     {},
+  //     keys(options)
+  //   );
+
+  //   const allMessageableChannels = await getSlackChannels(
+  //     formattedOptions,
+  //     requestWithDefaults,
+  //     Logger
+  //   ).catch((error) => {
+  //     errors = [
+  //       {
+  //         key: 'userToken',
+  //         message: `Auth Failed: ${ERROR_MESSAGES[error.statusCode]}`
+  //       }
+  //     ];
+  //   });
+  //
+  //  const asdf = filter(canSendMessagesInThisChannel, allMessageableChannels);
+  //   //TODO: add allMessageableChannels to config.js and send error message saying to restart the app and try your creds again
+  //   //TODO: add this back when bandwidth is available to change the comma separated channel names list, to a searchable multi-select.
+  // }
+
+  callback(null, errors);
 };
+
+const canSendMessagesInThisChannel = ({ is_private, is_member }) =>
+  !(is_private && !is_member);
 
 const _validateStringOptions = (stringOptionsErrorMessages, options, otherErrors = []) =>
   reduce((agg, message, optionName) => {

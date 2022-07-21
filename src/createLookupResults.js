@@ -18,53 +18,59 @@ const {
   values,
   snakeCase,
   keys,
-  assign
+  assign,
+  every
 } = require('lodash/fp');
 
 const constants = require('./constants');
 
-const createLookupResults = (queryResults, options, Logger) =>
-  map((entitySpecificQueryResults) => {
-    const formattedQueryResults = formatQueryResult(
-      entitySpecificQueryResults,
-      options,
-      Logger
-    );
+const createLookupResults = (entitiesPartition, channels, options, Logger) =>
+  map((entity) => {
+    //...entitySpecificQueryResults }) => {
+    // const formattedQueryResults = formatQueryResult(
+    //   entitySpecificQueryResults,
+    //   options,
+    //   Logger
+    // );
 
     const lookupResult = {
-      entity: entitySpecificQueryResults.entity,
-      data: !!formattedQueryResults
-        ? {
-            summary: createSummary(
-              entitySpecificQueryResults,
-              formattedQueryResults,
-              Logger
-            ),
-            details: flow(omit(['entity']), keys, (keys) =>
-              assign(formattedQueryResults, { tabKeys: keys })
-            )(entitySpecificQueryResults)
-          }
-        : null
+      entity,
+      data:
+        every(size, [channels, options.messagingChannelNames]) &&
+        options.allowSendingMessages
+          ? {
+              summary: ['Message Channels'],
+              // summary: createSummary(
+              //   entitySpecificQueryResults,
+              //   formattedQueryResults,
+              //   Logger
+              // ),
+              details: { channels }
+              // details: flow(omit(['entity']), keys, (keys) =>
+              //   assign(formattedQueryResults, { tabKeys: keys, channels })
+              // )(entitySpecificQueryResults)
+            }
+          : null
     };
 
     return lookupResult;
-  }, queryResults);
+  }, entitiesPartition);
 
-const createSummary = (unformattedQueryResults, formattedQueryResult, Logger) => {
-  return [];
-};
+// const createSummary = (unformattedQueryResults, formattedQueryResult, Logger) => {
+//   return [];
+// };
 
-const formatQueryResult = (entitySpecificQueryResults, options, Logger) => {
-  const noQueryResultHasContent = !flow(
-    omit(['entity']),
-    values,
-    some(size)
-  )(entitySpecificQueryResults);
-  if (noQueryResultHasContent) return;
+// const formatQueryResult = (entitySpecificQueryResults, options, Logger) => {
+//   const noQueryResultHasContent = !flow(
+//     omit(['entity']),
+//     values,
+//     some(size)
+//   )(entitySpecificQueryResults);
+//   if (noQueryResultHasContent) return;
 
-  return {
-    //TODO: add formatted query results
-  };
-};
+//   return {
+//     //TODO: add formatted query results
+//   };
+// };
 
 module.exports = createLookupResults;

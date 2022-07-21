@@ -168,6 +168,8 @@ const millisToHoursMinutesAndSeconds = (millis) => {
 //   }
 // };
 
+const sleep = async (ms = 2000) => new Promise((r) => setTimeout(r, ms));
+
 module.exports = {
   getKeys,
   groupEntities,
@@ -182,5 +184,6 @@ module.exports = {
   // standardizePossibleXmlList,
   // xmlToJson,
   and,
-  or
+  or,
+  sleep
 };

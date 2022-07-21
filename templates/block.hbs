@@ -1,0 +1,75 @@
+{{#if availableChannelsToMessage.length}}
+  <div class='messaging'>
+    <div class='channel-select-container'>
+      <div class='channel-select-title'>
+        {{#if selectedChannel.is_private}}
+          {{fa-icon 'lock' class='icon channel-icon' size='md' fixedWidth=true}}
+        {{else}}
+          {{fa-icon 'hashtag' class='icon channel-icon' size='md' fixedWidth=true}}
+        {{/if}}
+        <select
+          class='channel-dropdown'
+          onchange={{action 'selectChannel' value='target.value'}}
+        >
+          {{#each availableChannelsToMessage as |channel|}}
+            <option
+              class='channel-option'
+              value={{channel.id}}
+              selected={{eq channel.id selectedChannel.id}}
+            >{{channel.name}}</option>
+          {{/each}}
+        </select>
+      </div>
+      {{!-- TODO: create an Add Entity to Message button --}}
+    </div>
+    {{textarea
+      class='message-box'
+      change=(action (mut 'messageValue') value='target.value')
+      rows=2
+      placeholder=(concat 'Message ' selectedChannel.name)
+      value=messageValue
+      disabled=sendingMessage
+    }}
+    <div class='send-button-and-messages'>
+      <button
+        {{action 'sendMessage'}}
+        class='p-btn btn btn-light send-button {{if (or sendingMessage (not messageValue)) "disabled"}}'
+        disabled={{or sendingMessage (not messageValue)}}
+      >
+        {{#if sendingMessage}}
+          {{fa-icon
+            'spinner-third'
+            class='icon loading-icon'
+            size='md'
+            fixedWidth=true
+            spin=true
+            alt='Send Message'
+          }}
+        {{/if}}
+        {{fa-icon 'paper-plane' class='icon send-icon' size='md' fixedWidth=true}}
+      </button>
+      {{#if messagingToast}}
+        <div class='alert alert-info'>
+          {{messagingToast}}
+        </div>
+      {{/if}}
+      {{#if errorMessagingToast}}
+        <div class='alert alert-danger '>
+          {{errorMessagingToast}}
+        </div>
+      {{/if}}
+    </div>
+  </div>
+  {{!-- {{else}} TODO: Removing for now as this will require a per user cached flag for showNoChannelsMessage on server for a proper UX
+  {{#if showNoChannelsMessage}}
+    <span class='no-channels'>No Channels Found: Messaging Disabled
+      <button
+        {{action 'removeNoChannelsMessage'}}
+        class='p-btn btn btn-light mt-1'
+        disabled={{sendingMessage}}
+      >
+        {{fa-icon 'X' fixedWidth=true}}
+      </button>
+    </span>
+  {{/if}} --}}
+{{/if}}

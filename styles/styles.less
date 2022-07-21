@@ -1,0 +1,130 @@
+.messaging {
+  background-color: #f8f8f8;
+  cursor: text;
+  & .channel-select-container {
+    border-top: 1px solid #d4d4d4;
+    border-left: 1px solid #d4d4d4;
+    border-right: 1px solid #d4d4d4;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    // background-color: green;
+    padding: 4px;
+    height: 30px;
+    & .channel-select-title {
+      display: inline;
+      padding: 4px 8px;
+      border-radius: 6px;
+      & .channel-dropdown {
+        // background-color: blue;
+        color: rgb(29, 28, 29);
+        font-size: 14px;
+        font-weight: 800;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        & .channel-option {
+          font-size: 13px;
+          font-weight: 700;
+        }
+      }
+      &:hover {
+        background-color: #efefef;
+      }
+      &:active {
+        background-color: #d4d4d4;
+      }
+    }
+  }
+  & .message-box {
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    border-left: 1px solid #d4d4d4;
+    border-right: 1px solid #d4d4d4;
+    margin-bottom: -2px;
+    &:focus {
+      outline: none;
+    }
+  }
+  & .send-button-and-messages {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px;
+    border: none;
+    border-bottom: 1px solid #d4d4d4;
+    border-left: 1px solid #d4d4d4;
+    border-right: 1px solid #d4d4d4;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    background-color: white;
+    
+    & .alert {
+      margin-bottom: 0px;
+      padding: 8px 12px;
+    }
+    & .send-button {
+      background-color: #007a5a;
+      padding: 6px 8px;
+      height: 28px;
+      min-width: 55px;
+      border-radius: 4px;
+      & .icon {
+          &.send-icon {
+            color: white;
+          }
+        }
+      &:hover {
+        background-color: #188467;
+      }
+      &.disabled {
+        background-color: white;
+
+        cursor: text;
+        & .icon {
+          &.send-icon {
+            color: #5a5a5a;
+          }
+        }
+      }
+    }
+  }
+  & .icon {
+    color: rgb(29, 28, 29);
+    font-size: 13px;
+    &.channel-icon {
+      margin-right: -7px;
+      margin-bottom: 1px;
+    }
+  }
+}
+
+.copy-button {
+  width: 22px;
+  border-radius: 20px;
+  &:hover,
+  &:focus {
+    background: inherit;
+    .header-button-icon {
+      color: #1976d2;
+    }
+    background-color: rgba(153, 153, 153, 0.2);
+    border-color: rgba(153, 153, 153, 0.2);
+    cursor: pointer;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:active {
+    cursor: pointer;
+    .header-button-icon {
+      color: #fff;
+    }
+    background-color: #145ca4;
+    border-color: #125699;
+    transform: none;
+  }
+}
