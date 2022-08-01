@@ -156,6 +156,16 @@ module.exports = {
       type: 'text',
       userCanEdit: true,
       adminOnly: false
+    },
+    {
+      key: 'addEntityToMessageByDefault',
+      name: 'Add Entity Value to Message By Default',
+      description:
+        'If checked, the entity value will be added to the Slack Messaging Box in the Overlay by Default',
+      default: true,
+      type: 'boolean',
+      userCanEdit: true,
+      adminOnly: false
     }
   ]
 };

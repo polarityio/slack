@@ -24,6 +24,13 @@ polarity.export = PolarityComponent.extend({
 
     this.set('availableChannelsToMessage', availableChannelsToMessage);
     this.set('selectedChannel', availableChannelsToMessage[0]);
+    this.set(
+      'messageValue',
+      this.get('block.userOptions.addEntityToMessageByDefault')
+        ? this.get('block.entity.value')
+        : ''
+    );
+
     this._super(...arguments);
   },
   actions: {

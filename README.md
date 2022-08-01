@@ -34,6 +34,8 @@ A comma separated list of Channels Names anyone using the Integration can send a
 ### Slack Messaging Display Name
 The name you wish to use when Posting Messages on Slack Channels.  If left empty the default display name will just be "Polarity".
 
+### Add Entity Value to Message By Default
+If checked, the entity value will be added to the Slack Messaging Box in the Overlay by Default
 
 ## Installation Instructions
 
