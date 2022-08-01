@@ -14,6 +14,9 @@ The URL of the Slack API you would like to connect to
 ### User Token
 The API User Token associated with the your Polarity Slack App. Your User Token should start with "xoxp-###...". Optional if you don't wish to search.
 
+### Ignore Entity Types
+When checked, strings searched that are one of our predefined entity types (IPv4, IPv6, IPv4CIDR, MD5, SHA1, SHA256, MAC, string, email, domain, url, and cve) will not be displayed in the overlay.
+
 <!-- TODO: Add instructions on how to obtain a User and Bot Token -->
 
 ### Bot Token

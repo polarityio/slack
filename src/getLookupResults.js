@@ -1,4 +1,4 @@
-const { map, flow, first, split, last, trim } = require('lodash/fp');
+const { map, flow, first, split, last, trim, filter, get, size, negate, isEqual, some, toLower, eq, uniqBy } = require('lodash/fp');
 
 const { splitOutIgnoredIps } = require('./dataTransformations');
 const createLookupResults = require('./createLookupResults');
@@ -18,21 +18,21 @@ const getLookupResults = async (entities, options, requestWithDefaults, Logger) 
     entitiesWithCustomTypesSpecified
   );
 
+  const filteredEntities = filterOutInvalidEntities(entitiesPartition, options);
   const channels = await getSlackChannels(options, requestWithDefaults, Logger);
-
 
   const foundMessagesByEntity = options.allowSearchingMessages
     ? await searchMessages(
-        entitiesPartition,
+        filteredEntities,
         channels,
         options,
         requestWithDefaults,
         Logger
       )
-    : []
+    : [];
 
   const lookupResults = createLookupResults(
-    entitiesPartition,
+    filteredEntities,
     channels,
     foundMessagesByEntity,
     options,
@@ -41,5 +41,34 @@ const getLookupResults = async (entities, options, requestWithDefaults, Logger) 
 
   return lookupResults.concat(ignoredIpLookupResults);
 };
+
+const filterOutInvalidEntities = (entities, options) =>
+  flow(
+    filter((entity) => {
+      const trimmedEntityValue = flow(get('value'), trim)(entity);
+
+      const isNotWhitespace = size(trimmedEntityValue);
+      const isCorrectType =
+        entity.type === 'custom' &&
+        (!options.ignoreEntityTypes ||
+          (entity.types.length === 1 &&
+            !flow(
+              filter(negate(isEqual(entity))),
+              some(
+                flow(
+                  get('rawValue'),
+                  trim,
+                  toLower,
+                  eq(flow(get('rawValue'), trim, toLower)(entity))
+                )
+              )
+            )(entities)));
+
+      return (
+        isNotWhitespace && isCorrectType && trimmedEntityValue.length >= options.minLength
+      );
+    }),
+    uniqBy(flow(get('value'), trim))
+  )(entities);
 
 module.exports = getLookupResults;

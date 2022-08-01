@@ -7,7 +7,7 @@ module.exports = {
   // customTypes: [
   //   {
   //     key: 'allText',
-  //     regex: /\S[\s\S]{0,256}\S/
+  //     regex: /\S[\s\S]{2,256}\S/
   //   }
   // ],
   styles: ['./styles/styles.less'],
@@ -63,6 +63,17 @@ module.exports = {
       type: 'password',
       userCanEdit: false,
       adminOnly: true
+    },
+    {
+      key: 'ignoreEntityTypes',
+      name: 'Ignore Entity Types',
+      description:
+        'When checked, strings searched that are one of our predefined entity types ' +
+        '(IPv4, IPv6, IPv4CIDR, MD5, SHA1, SHA256, MAC, string, email, domain, url, and cve) will not be displayed in the overlay.',
+      default: true,
+      type: 'boolean',
+      userCanEdit: true,
+      adminOnly: false
     },
     {
       key: 'allowSearchingMessages',

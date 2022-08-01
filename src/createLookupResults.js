@@ -22,8 +22,8 @@ const createLookupResults = (
     const lookupResult = {
       entity,
       data:
-        every(size, [channels]) ||
-        (!options.allowSendingMessages && size(foundMessagesFromSearch))
+        (!options.allowSendingMessages && size(foundMessagesFromSearch)) ||
+        (options.allowSendingMessages && every(size, [channels]))
           ? {
               summary: []
                 .concat(options.allowSendingMessages ? 'Message Channels' : [])
