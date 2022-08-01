@@ -11,7 +11,7 @@ module.exports = {
   //   }
   // ],
   styles: ['./styles/styles.less'],
-  defaultColor: 'light-purple',
+  defaultColor: 'light-gray',
   block: {
     component: {
       file: './components/block.js'
