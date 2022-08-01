@@ -21,19 +21,21 @@ const createLookupResults = (
 
     const lookupResult = {
       entity,
-      data: every(size, [channels])
-        ? {
-            summary: []
-              .concat(options.allowSendingMessages ? 'Message Channels' : [])
-              .concat(size(foundMessagesFromSearch) ? 'Search Results' : []),
-            details: {
-              channels,
-              foundMessagesFromSearch,
-              totalNumberOfSearchResultPages,
-              currentSearchResultsPage
+      data:
+        every(size, [channels]) ||
+        (!options.allowSendingMessages && size(foundMessagesFromSearch))
+          ? {
+              summary: []
+                .concat(options.allowSendingMessages ? 'Message Channels' : [])
+                .concat(size(foundMessagesFromSearch) ? 'Search Results' : []),
+              details: {
+                channels,
+                foundMessagesFromSearch,
+                totalNumberOfSearchResultPages,
+                currentSearchResultsPage
+              }
             }
-          }
-        : null
+          : null
     };
 
     return lookupResult;
