@@ -71,9 +71,9 @@ const createRequestWithDefaults = (Logger) => {
     headers: {
       ...requestOptions.headers,
       Authorization: `Bearer ${
-        some(includes(__, requestOptions.url), ['conversations.list', 'chat.postMessage'])
-          ? options.botToken
-          : options.userToken
+        some(includes(__, requestOptions.url), ['search.messages'])
+          ? options.userToken
+          : options.botToken
       }`
     }
   });
@@ -86,7 +86,7 @@ const createRequestWithDefaults = (Logger) => {
     };
 
     Logger.trace({
-      MESSAGE: 'checkForStatusError',
+      MESSAGE: 'Request Ran, Checking Status...',
       statusCode,
       requestOptions: requestOptionsWithoutSensitiveData,
       body

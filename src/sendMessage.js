@@ -17,13 +17,10 @@ const sendMessage = async (
         username: `Polarity${
           options.messagingDisplayName ? `: ${options.messagingDisplayName}` : ''
         }`
-        //TODO: possibly implement mrkdwn: true with a user option
-        // mrkdwn: true,
       },
       options
     });
 
-    //TODO: return link to sent message and display above input as clickable link
     callback(null, {});
   } catch (error) {
     const err = parseErrorToReadableJSON(error);

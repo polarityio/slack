@@ -1,15 +1,17 @@
 module.exports = {
   name: 'Slack',
   acronym: 'SLACK',
-  description: 'Send Messages to Slack directly from the Overlay, and Query Messages.',
+  description:
+    'Send Messages to Slack directly from the Overlay, and Search Entities in Slack Channel Messages.',
   entityTypes: ['*'],
-  customTypes: [
-    {
-      key: 'allText',
-      regex: /\S[\s\S]{0,256}\S/
-    }
-  ],
+  // customTypes: [
+  //   {
+  //     key: 'allText',
+  //     regex: /\S[\s\S]{0,256}\S/
+  //   }
+  // ],
   styles: ['./styles/styles.less'],
+  defaultColor: 'light-purple',
   block: {
     component: {
       file: './components/block.js'
@@ -27,7 +29,7 @@ module.exports = {
     rejectUnauthorized: false
   },
   logging: {
-    level: 'trace' //trace, debug, info, warn, error, fatal
+    level: 'info' //trace, debug, info, warn, error, fatal
   },
   options: [
     {
@@ -43,9 +45,9 @@ module.exports = {
       key: 'userToken',
       name: 'User Token',
       description:
-        'The API User Token associated with the your Polarity Slack App.' +
-        'Your User Token should start with "xoxp-###...". Instructions to find your ' +
-        'token can be found in you Integrations "./README.md" file.',
+        'The API User Token associated with the your Polarity Slack App. ' +
+        'Your User Token should start with "xoxp-###...". Optional if you don\'t wish to ' +
+        'search and uncheck "Allow Searching Slack Messages"',
       default: '',
       type: 'password',
       userCanEdit: false,
@@ -55,24 +57,49 @@ module.exports = {
       key: 'botToken',
       name: 'Bot Token',
       description:
-        'The API Bot Token associated with the your Polarity Slack App.' +
-        'Your User Token should start with "xoxb-###...". Instructions to find your ' +
-        'token can be found in you Integrations "./README.md" file.',
+        'The API Bot Token associated with the your Polarity Slack App. ' +
+        'Your User Token should start with "xoxb-###..."',
       default: '',
       type: 'password',
       userCanEdit: false,
       adminOnly: true
     },
-    // {
-    //   key: 'allowSearchingMessages',
-    //   name: 'Allow Searching Slack Messages',
-    //   description:
-    //     'If checked, all entities will be search in the Channels listed below.',
-    //   default: true,
-    //   type: 'boolean',
-    //   userCanEdit: true,
-    //   adminOnly: false
-    // },
+    {
+      key: 'allowSearchingMessages',
+      name: 'Allow Searching Slack Messages',
+      description: 'If checked, all entities will be search in Slack',
+      default: true,
+      type: 'boolean',
+      userCanEdit: true,
+      adminOnly: false
+    },
+    {
+      key: 'sortBy',
+      name: 'Sort Message Search Results By',
+      description: 'Return the search results in a particular order',
+      default: {
+        value: 'score,desc',
+        display: 'Best Search Match First'
+      },
+      type: 'select',
+      options: [
+        {
+          value: 'score,desc',
+          display: 'Best Search Match First'
+        },
+        {
+          value: 'timestamp,desc',
+          display: 'Most Recent Search Match First'
+        },
+        {
+          value: 'timestamp,asc',
+          display: 'Oldest Search Match First'
+        }
+      ],
+      multiple: false,
+      userCanEdit: true,
+      adminOnly: false
+    },
     // {
     //   key: 'searchOnDetails',
     //   name: 'Search After Opening',
@@ -87,12 +114,12 @@ module.exports = {
     //   adminOnly: false
     // },
     // {
-    //   key: 'searchChannelNames',
-    //   name: 'Slack Channel Names for Searching',
+    //   key: 'excludeSearchChannelNames',
+    //   name: 'Slack Channel Names to Exclude from Searching',
     //   description:
-    //     'A comma separated list of Channels Names that will be searched.\n' +
+    //     'A comma separated list of Channels Names that will be ignored during searched.\n' +
     //     '"NOTE:" If left empty, all available Channels will be searched.',
-    //   default: 'general, _fab, polarity-bug-reports, _target',
+    //   default: 'jira_updates',
     //   type: 'text',
     //   userCanEdit: false,
     //   adminOnly: true
@@ -112,10 +139,10 @@ module.exports = {
       key: 'messagingChannelNames',
       name: 'Slack Channel Names for Messages',
       description:
-        'A comma separated list of Channels Names anyone using the Integration can send a messages to.\n' +
-        '"NOTE:" If left empty, you will not be able to Message any Channels.',
-      default:
-        'slack-int-testing, test-slack-int, general, _fab, polarity-bug-reports, _target',
+        'A comma separated list of Channels Names anyone using the Integration can send a ' +
+        'messages to. If you want to send messages to a private channel, you must send a ' +
+        'message in the channel containing "@Polarity" in it first.',
+      default: 'general',
       type: 'text',
       userCanEdit: true,
       adminOnly: false

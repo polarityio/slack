@@ -2,10 +2,12 @@ const { isEmpty, keys } = require('lodash/fp');
 const reduce = require('lodash/fp/reduce').convert({ cap: false });
 const getSlackChannels = require('./getSlackChannels');
 
-const validateOptions = (requestWithDefaults) => async (options, callback) => {
+const validateOptions = (options, callback) => {
   const stringOptionsErrorMessages = {
     url: 'You must provide a valid Slack URL',
-    userToken: 'You must provide a valid Slack User Token',
+    ...(options.allowSendingMessages.value && {
+      userToken: 'You must provide a valid Slack User Token'
+    }),
     botToken: 'You must provide a valid Slack Bot Token'
   };
 
@@ -16,40 +18,38 @@ const validateOptions = (requestWithDefaults) => async (options, callback) => {
 
   const urlValidationErrors = _validateUrlOption(options.url);
 
-  let errors = stringValidationErrors.concat(urlValidationErrors);
-  
-  //TODO: channel option validation for a comma separated list with no spaces in channel name, and that channel names can be found in the channel list
-  
-  // if (!errors.length) {
-  //   const formattedOptions = reduce(
-  //     (agg, key) => ({ ...agg, [key]: get([key, 'value'], options) }),
-  //     {},
-  //     keys(options)
-  //   );
+  const noChannelNamesError =
+    options.allowSendingMessages.value && !options.messagingChannelNames.value
+      ? {
+          key: 'messagingChannelNames',
+          message:
+            'If "Allow Sending Slack Messages" is Checked, then you must provide at least one channel name to send messages.'
+        }
+      : [];
 
-  //   const allMessageableChannels = await getSlackChannels(
-  //     formattedOptions,
-  //     requestWithDefaults,
-  //     Logger
-  //   ).catch((error) => {
-  //     errors = [
-  //       {
-  //         key: 'userToken',
-  //         message: `Auth Failed: ${ERROR_MESSAGES[error.statusCode]}`
-  //       }
-  //     ];
-  //   });
-  //
-  //  const asdf = filter(canSendMessagesInThisChannel, allMessageableChannels);
-  //   //TODO: add allMessageableChannels to config.js and send error message saying to restart the app and try your creds again
-  //   //TODO: add this back when bandwidth is available to change the comma separated channel names list, to a searchable multi-select.
-  // }
+  const integrationDoesNothingError = !(
+    options.allowSendingMessages.value || options.allowSearchingMessages.value
+  )
+    ? [
+        {
+          key: 'allowSendingMessages',
+          message: 'At least one of these must be check for the integration to do anything.'
+        },
+        {
+          key: 'allowSearchingMessages',
+          message:
+            'At least one of these must be check for the integration to do anything.'
+        }
+      ]
+    : [];
 
-  callback(null, errors);
+  let errors = stringValidationErrors
+    .concat(urlValidationErrors)
+    .concat(noChannelNamesError)
+    .concat(integrationDoesNothingError);
+
+    callback(null, errors);
 };
-
-const canSendMessagesInThisChannel = ({ is_private, is_member }) =>
-  !(is_private && !is_member);
 
 const _validateStringOptions = (stringOptionsErrorMessages, options, otherErrors = []) =>
   reduce((agg, message, optionName) => {
