@@ -18,12 +18,12 @@ const getLookupResults = async (entities, options, requestWithDefaults, Logger) 
     entitiesWithCustomTypesSpecified
   );
 
-  const filteredEntities = filterOutInvalidEntities(entitiesPartition, options);
+  // const filteredEntities = filterOutInvalidEntities(entitiesPartition, options);
   const channels = await getSlackChannels(options, requestWithDefaults, Logger);
 
   const foundMessagesByEntity = options.allowSearchingMessages
     ? await searchMessages(
-        filteredEntities,
+        entitiesPartition,
         channels,
         options,
         requestWithDefaults,
@@ -32,7 +32,7 @@ const getLookupResults = async (entities, options, requestWithDefaults, Logger) 
     : [];
 
   const lookupResults = createLookupResults(
-    filteredEntities,
+    entitiesPartition,
     channels,
     foundMessagesByEntity,
     options,
