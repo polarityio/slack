@@ -4,6 +4,11 @@ module.exports = {
   description:
     'Send Messages to Slack directly from the Overlay, and Search Entities in Slack Channel Messages.',
   entityTypes: ['*'],
+  /* NOTE: If the `allText` customType is commented in, you must make the integration 
+    On Demand Only, by commenting in `onDemandOnly: true,` as well.  Without this, it is
+    possible crashes could occur on streaming mode.
+  */
+  // onDemandOnly: true,
   // customTypes: [
   //   {
   //     key: 'allText',
@@ -64,17 +69,18 @@ module.exports = {
       userCanEdit: false,
       adminOnly: true
     },
-    {
-      key: 'ignoreEntityTypes',
-      name: 'Ignore Entity Types',
-      description:
-        'When checked, strings searched that are one of our predefined entity types ' +
-        '(IPv4, IPv6, IPv4CIDR, MD5, SHA1, SHA256, MAC, string, email, domain, url, and cve) will not be displayed in the overlay.',
-      default: false,
-      type: 'boolean',
-      userCanEdit: true,
-      adminOnly: false
-    },
+    /* NOTE: Comment in only if  "allText" custom type is commented in*/
+    // {
+    //   key: 'ignoreEntityTypes',
+    //   name: 'Ignore Entity Types',
+    //   description:
+    //     'When checked, strings searched that are one of our predefined entity types ' +
+    //     '(IPv4, IPv6, IPv4CIDR, MD5, SHA1, SHA256, MAC, string, email, domain, url, and cve) will not be displayed in the overlay.',
+    //   default: false,
+    //   type: 'boolean',
+    //   userCanEdit: true,
+    //   adminOnly: false
+    // },
     {
       key: 'minLength',
       name: 'Minimum Input Length',
@@ -96,10 +102,12 @@ module.exports = {
     {
       key: 'allowSearchingMessages',
       name: 'Allow Searching Slack Messages',
-      description: 'If checked, all entities will be search in Slack',
+      description:
+        'If checked, all entities will be search in Slack. ' +
+        '(This option must be set to "Users can view only" or "Users can view and edit")',
       default: true,
       type: 'boolean',
-      userCanEdit: true,
+      userCanEdit: false,
       adminOnly: false
     },
     {
@@ -158,10 +166,11 @@ module.exports = {
       name: 'Allow Sending Slack Messages',
       description:
         'If checked, a prompt will show for every entity searched, regardless of Search ' +
-        'Results, allowing you to send a message to any Channels listed below.',
+        'Results, allowing you to send a message to any Channels listed below. ' +
+        '(This option must be set to "Users can view only" or "Users can view and edit")',
       default: true,
       type: 'boolean',
-      userCanEdit: true,
+      userCanEdit: false,
       adminOnly: false
     },
     {
