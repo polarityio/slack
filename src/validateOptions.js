@@ -44,7 +44,7 @@ const validateOptions = (options, callback, Logger) => {
     : [];
 
   const ignoreEntityTypesTrueWithoutCustomTypeOnError =
-    options.ignoreEntityTypes.value &&
+    get('ignoreEntityTypes.value', options) &&
     !get('enabled', get('_integrationChannels.value', options)['custom.allText'])
       ? {
           key: 'ignoreEntityTypes',
