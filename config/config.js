@@ -4,17 +4,12 @@ module.exports = {
   description:
     'Send Messages to Slack directly from the Overlay, and Search Entities in Slack Channel Messages.',
   entityTypes: ['*'],
-  /* NOTE: If the `allText` customType is commented in, you must make the integration 
-    On Demand Only, by commenting in `onDemandOnly: true,` as well.  Without this, it is
-    possible crashes could occur on streaming mode.
-  */
-  // onDemandOnly: true,
-  // customTypes: [
-  //   {
-  //     key: 'allText',
-  //     regex: /\S[\s\S]*\S/
-  //   }
-  // ],
+  customTypes: [
+    {
+      key: 'slackSearch',
+      regex: /slack:[\s\S]*/i
+    }
+  ],
   styles: ['./styles/styles.less'],
   defaultColor: 'light-gray',
   block: {
@@ -68,36 +63,6 @@ module.exports = {
       type: 'password',
       userCanEdit: false,
       adminOnly: true
-    },
-    /* NOTE: Comment in only if  "allText" custom type is commented in*/
-    // {
-    //   key: 'ignoreEntityTypes',
-    //   name: 'Ignore Entity Types',
-    //   description:
-    //     'When checked, strings searched that are one of our predefined entity types ' +
-    //     '(IPv4, IPv6, IPv4CIDR, MD5, SHA1, SHA256, MAC, string, email, domain, url, and cve) will not be displayed in the overlay.',
-    //   default: false,
-    //   type: 'boolean',
-    //   userCanEdit: true,
-    //   adminOnly: false
-    // },
-    {
-      key: 'minLength',
-      name: 'Minimum Input Length',
-      description: 'The minimum text input length for a string to be considered Input.',
-      default: 5,
-      type: 'number',
-      userCanEdit: true,
-      adminOnly: false
-    },
-    {
-      key: 'maxLength',
-      name: 'Maximum Input Length',
-      description: 'The maximum text input length for a string to be considered Input.',
-      default: 256,
-      type: 'number',
-      userCanEdit: true,
-      adminOnly: false
     },
     {
       key: 'allowSearchingMessages',

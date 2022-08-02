@@ -23,17 +23,6 @@ The API User Token associated with the your Polarity Slack App. Your User Token 
 ### Bot Token
 The API Bot Token associated with the your Polarity Slack App. Your User Token should start with "xoxb-###...". 
 
-### Ignore Entity Types
-When checked, strings searched that are one of our predefined entity types (IPv4, IPv6, IPv4CIDR, MD5, SHA1, SHA256, MAC, string, email, domain, url, and cve) will not be displayed in the overlay.
-
-> ***NOTE:*** By default commented out in the `./config/config.js` file.
-
-### Minimum Input Length
-The minimum text input length for a string to be considered Input. (default: 5)
-
-### Maximum Input Length
-The maximum text input length for a string to be considered Input. (default: 256)
-
 ### Allow Searching Slack Messages
 If checked, all entities will be search in Slack.
 > ***NOTE:*** This option must be set to "Users can view only" or "Users can view and edit"
