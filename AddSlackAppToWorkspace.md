@@ -70,7 +70,7 @@
       <img alt="Click Allow" src="./assets/click-allow.png">
     </div>
 
-10. Download the image found here: TODO: add link
+10. Download the image found here: https://github.com/polarityio/slack/raw/develop/assets/app-profile-picture.png
     <div>
       <img width="75"style="border-radius: 49%" alt="App Profile Picture" src="./assets/app-profile-picture.png">
     </div>
