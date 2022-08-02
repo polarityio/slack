@@ -107,7 +107,7 @@ module.exports = {
         '(This option must be set to "Users can view only" or "Users can view and edit")',
       default: true,
       type: 'boolean',
-      userCanEdit: false,
+      userCanEdit: true,
       adminOnly: false
     },
     {
@@ -170,7 +170,7 @@ module.exports = {
         '(This option must be set to "Users can view only" or "Users can view and edit")',
       default: true,
       type: 'boolean',
-      userCanEdit: false,
+      userCanEdit: true,
       adminOnly: false
     },
     {
