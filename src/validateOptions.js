@@ -1,8 +1,7 @@
-const { isEmpty, keys } = require('lodash/fp');
+const { isEmpty, get } = require('lodash/fp');
 const reduce = require('lodash/fp/reduce').convert({ cap: false });
-const getSlackChannels = require('./getSlackChannels');
 
-const validateOptions = (options, callback) => {
+const validateOptions = (options, callback, Logger) => {
   const stringOptionsErrorMessages = {
     url: 'You must provide a valid Slack URL',
     ...(options.allowSendingMessages.value && {
@@ -33,7 +32,8 @@ const validateOptions = (options, callback) => {
     ? [
         {
           key: 'allowSendingMessages',
-          message: 'At least one of these must be check for the integration to do anything.'
+          message:
+            'At least one of these must be check for the integration to do anything.'
         },
         {
           key: 'allowSearchingMessages',
@@ -43,12 +43,23 @@ const validateOptions = (options, callback) => {
       ]
     : [];
 
+  const ignoreEntityTypesTrueWithoutCustomTypeOnError =
+    options.ignoreEntityTypes.value &&
+    !get('enabled', get('_integrationChannels.value', options)['custom.allText'])
+      ? {
+          key: 'ignoreEntityTypes',
+          message:
+            'Cannot enable "Ignore Entity Types" without the "custom.allText" entity type enabled'
+        }
+      : [];
+
   let errors = stringValidationErrors
     .concat(urlValidationErrors)
     .concat(noChannelNamesError)
-    .concat(integrationDoesNothingError);
+    .concat(integrationDoesNothingError)
+    .concat(ignoreEntityTypesTrueWithoutCustomTypeOnError);
 
-    callback(null, errors);
+  callback(null, errors);
 };
 
 const _validateStringOptions = (stringOptionsErrorMessages, options, otherErrors = []) =>

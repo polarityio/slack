@@ -24,7 +24,7 @@
       </div>
       {{textarea
         class='message-box'
-        change=(action (mut 'messageValue') value='target.value')
+        change=(action (mut messageValue) value='target.value')
         rows=2
         placeholder=(concat 'Message ' selectedChannel.name)
         value=messageValue

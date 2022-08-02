@@ -18,12 +18,12 @@ const getLookupResults = async (entities, options, requestWithDefaults, Logger) 
     entitiesWithCustomTypesSpecified
   );
 
-  // const filteredEntities = filterOutInvalidEntities(entitiesPartition, options);
+  const filteredEntities = filterOutInvalidEntities(entitiesPartition, options, Logger);
   const channels = await getSlackChannels(options, requestWithDefaults, Logger);
 
   const foundMessagesByEntity = options.allowSearchingMessages
     ? await searchMessages(
-        entitiesPartition,
+        filteredEntities,
         channels,
         options,
         requestWithDefaults,
@@ -32,7 +32,7 @@ const getLookupResults = async (entities, options, requestWithDefaults, Logger) 
     : [];
 
   const lookupResults = createLookupResults(
-    entitiesPartition,
+    filteredEntities,
     channels,
     foundMessagesByEntity,
     options,
@@ -42,30 +42,44 @@ const getLookupResults = async (entities, options, requestWithDefaults, Logger) 
   return lookupResults.concat(ignoredIpLookupResults);
 };
 
-const filterOutInvalidEntities = (entities, options) =>
+const filterOutInvalidEntities = (entities, options, Logger) =>
   flow(
     filter((entity) => {
       const trimmedEntityValue = flow(get('value'), trim)(entity);
 
       const isNotWhitespace = size(trimmedEntityValue);
-      const isCorrectType =
-        entity.type === 'custom' &&
-        (!options.ignoreEntityTypes ||
-          (entity.types.length === 1 &&
-            !flow(
-              filter(negate(isEqual(entity))),
-              some(
-                flow(
-                  get('rawValue'),
-                  trim,
-                  toLower,
-                  eq(flow(get('rawValue'), trim, toLower)(entity))
-                )
-              )
-            )(entities)));
 
+      const noDuplicateEntityValue = !flow(
+        filter(negate(isEqual(entity))),
+        some(
+          flow(
+            get('rawValue'),
+            trim,
+            toLower,
+            eq(flow(get('rawValue'), trim, toLower)(entity))
+          )
+        )
+      )(entities);
+
+      const isCorrectType =
+        !options.ignoreEntityTypes ||
+        ((entity.type === 'custom' || entity.type === 'allText') &&
+          (!entity.types || size(entity.types) === 1) &&
+          !(
+            entity.isIP ||
+            entity.hashType ||
+            entity.isGeo ||
+            entity.isEmail ||
+            entity.isURL ||
+            entity.isDomain
+          ) &&
+          noDuplicateEntityValue);
+          
       return (
-        isNotWhitespace && isCorrectType && trimmedEntityValue.length >= options.minLength
+        isNotWhitespace &&
+        isCorrectType &&
+        trimmedEntityValue.length >= options.minLength &&
+        trimmedEntityValue.length <= options.maxLength
       );
     }),
     uniqBy(flow(get('value'), trim))

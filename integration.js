@@ -1,6 +1,6 @@
 'use strict';
 
-const validateOptions = require('./src/validateOptions');
+const _validateOptions = require('./src/validateOptions');
 const createRequestWithDefaults = require('./src/createRequestWithDefaults');
 
 const getLookupResults = require('./src/getLookupResults');
@@ -44,6 +44,8 @@ const getOnMessage = { sendMessage, loadMoreSearchMessages };
 const onMessage = ({ action, data: actionParams }, options, callback) =>
   getOnMessage[action](actionParams, options, requestWithDefaults, callback, Logger);
 
+const validateOptions = (options, callback) =>
+  _validateOptions(options, callback, Logger);
 
 module.exports = {
   startup,

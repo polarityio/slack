@@ -17,6 +17,12 @@ The API User Token associated with the your Polarity Slack App. Your User Token 
 ### Ignore Entity Types
 When checked, strings searched that are one of our predefined entity types (IPv4, IPv6, IPv4CIDR, MD5, SHA1, SHA256, MAC, string, email, domain, url, and cve) will not be displayed in the overlay.
 
+### Minimum Input Length
+The minimum text input length for a string to be considered Input. (default: 5)
+
+### Maximum Input Length
+The maximum text input length for a string to be considered Input. (default: 256)
+
 <!-- TODO: Add instructions on how to obtain a User and Bot Token -->
 
 ### Bot Token

@@ -7,7 +7,7 @@ module.exports = {
   // customTypes: [
   //   {
   //     key: 'allText',
-  //     regex: /\S[\s\S]{2,256}\S/
+  //     regex: /\S[\s\S]*\S/
   //   }
   // ],
   styles: ['./styles/styles.less'],
@@ -70,8 +70,26 @@ module.exports = {
       description:
         'When checked, strings searched that are one of our predefined entity types ' +
         '(IPv4, IPv6, IPv4CIDR, MD5, SHA1, SHA256, MAC, string, email, domain, url, and cve) will not be displayed in the overlay.',
-      default: true,
+      default: false,
       type: 'boolean',
+      userCanEdit: true,
+      adminOnly: false
+    },
+    {
+      key: 'minLength',
+      name: 'Minimum Input Length',
+      description: 'The minimum text input length for a string to be considered Input.',
+      default: 5,
+      type: 'number',
+      userCanEdit: true,
+      adminOnly: false
+    },
+    {
+      key: 'maxLength',
+      name: 'Maximum Input Length',
+      description: 'The maximum text input length for a string to be considered Input.',
+      default: 256,
+      type: 'number',
       userCanEdit: true,
       adminOnly: false
     },
