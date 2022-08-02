@@ -4,6 +4,8 @@
 
 The Polarity Slack Integration allows you to ***Send Messages to Channels in Slack*** directly from the Overlay , and ***Search Entities in Slack Channel Messages*** for all entity types.
 
+You can even search any string and not just standard entity type via the integration by typing `slack: <my-custom-search-here>` in the overlay search bar.
+
 > ***NOTE:*** You must go through the process of creating your `Polarity Slack App` in your Slack instance.  Instructions on how to do this can be found in the [**Polarity App Installation Guide**](./AddSlackAppToWorkspace.md).
 
 To learn more about Slack, visit the [official website](https://slack.com/).
