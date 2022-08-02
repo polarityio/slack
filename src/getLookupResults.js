@@ -6,13 +6,15 @@ const getSlackChannels = require('./getSlackChannels');
 const searchMessages = require('./searchMessages');
 
 const getLookupResults = async (entities, options, requestWithDefaults, Logger) => {
-  const entitiesWithCustomTypesSpecified = map(
-    ({ type, types, ...entity }) => ({
+  const entitiesWithCustomTypesSpecified = map(({ type, types, value, ...entity }) => {
+    type = type === 'custom' ? flow(first, split('.'), last)(types) : type;
+
+    return {
       ...entity,
-      type: type === 'custom' ? flow(first, split('.'), last)(types) : type
-    }),
-    entities
-  );
+      type,
+      value: type === 'manualSlackSearch' ? flow(split(':'), last, trim)(value) : value
+    };
+  }, entities);
 
   const { entitiesPartition, ignoredIpLookupResults } = splitOutIgnoredIps(
     entitiesWithCustomTypesSpecified

@@ -6,8 +6,8 @@ module.exports = {
   entityTypes: ['*'],
   customTypes: [
     {
-      key: 'slackSearch',
-      regex: /slack:[\s\S]*/i
+      key: 'manualSlackSearch',
+      regex: /slack:[\s\S]+/
     }
   ],
   styles: ['./styles/styles.less'],
