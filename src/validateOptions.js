@@ -1,4 +1,4 @@
-const { isEmpty } = require('lodash/fp');
+const { isEmpty, get } = require('lodash/fp');
 const reduce = require('lodash/fp/reduce').convert({ cap: false });
 
 const validateOptions = (options, callback, Logger) => {
@@ -43,10 +43,21 @@ const validateOptions = (options, callback, Logger) => {
       ]
     : [];
 
-  let errors = stringValidationErrors
+  const ignoreEntityTypesTrueWithoutCustomTypeOnError =
+    get('ignoreEntityTypes.value', options) &&
+    !get('enabled', get('_integrationChannels.value', options)['custom.allText'])
+      ? {
+          key: 'ignoreEntityTypes',
+          message:
+            'Cannot enable "Ignore Entity Types" without the "custom.allText" entity type enabled'
+        }
+      : [];
+
+  const errors = stringValidationErrors
     .concat(urlValidationErrors)
     .concat(noChannelNamesError)
-    .concat(integrationDoesNothingError);
+    .concat(integrationDoesNothingError)
+    .concat(ignoreEntityTypesTrueWithoutCustomTypeOnError);
 
   callback(null, errors);
 };

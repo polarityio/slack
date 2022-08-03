@@ -4,10 +4,13 @@
 
 The Polarity Slack Integration allows you to ***Send Messages to Channels in Slack*** directly from the Overlay , and ***Search Entities in Slack Channel Messages*** for all entity types.
 
-You can even search any string and not just standard entity type via the integration by typing `slack: <my-custom-search-here>` in the overlay search bar.
 
 > ***NOTE:*** You must go through the process of creating your `Polarity Slack App` in your Slack instance.  Instructions on how to do this can be found in the [**Polarity App Installation Guide**](./AddSlackAppToWorkspace.md).
 
+<div style="display:flex; justify-content:center; align-items: flex-start;">
+  <img width="300" alt="Integration Example Search" src="./assets/int-example-search.png">
+  <img width="300" alt="Integration Example Message Channels" src="./assets/int-example-message-channels.png">
+</div>
 To learn more about Slack, visit the [official website](https://slack.com/).
 
 ## Private Channels
@@ -24,6 +27,16 @@ The API User Token associated with the your Polarity Slack App. Your User Token 
 
 ### Bot Token
 The API Bot Token associated with the your Polarity Slack App. Your User Token should start with "xoxb-###...". 
+
+### Ignore Entity Types
+When checked, strings searched that are one of our predefined entity types (IPv4, IPv6, IPv4CIDR, MD5, SHA1, SHA256, MAC, string, email, domain, url, and cve) will not be displayed in the overlay.
+
+> ***NOTE:*** By default commented out in the `./config/config.js` file.
+### Minimum Input Length
+The minimum text input length for a string to be considered Input. (default: 5)
+
+### Maximum Input Length
+The maximum text input length for a string to be considered Input. (default: 256)
 
 ### Allow Searching Slack Messages
 If checked, all entities will be search in Slack.
