@@ -1,11 +1,30 @@
-const { map, flow, first, split, last, trim } = require('lodash/fp');
+const {
+  map,
+  flow,
+  first,
+  split,
+  last,
+  trim,
+  filter,
+  get,
+  getOr,
+  size,
+  negate,
+  isEqual,
+  some,
+  toLower,
+  eq,
+  uniqBy
+} = require('lodash/fp');
 
 const { splitOutIgnoredIps } = require('./dataTransformations');
 const createLookupResults = require('./createLookupResults');
+const getSlackChannels = require('./getSlackChannels');
+const searchMessages = require('./searchMessages');
 
 const getLookupResults = async (entities, options, requestWithDefaults, Logger) => {
   const entitiesWithCustomTypesSpecified = map(
-    ({ type, types, value, ...entity }) => ({
+    ({ type, types, ...entity }) => ({
       ...entity,
       type: type === 'custom' ? flow(first, split('.'), last)(types) : type
     }),
@@ -16,34 +35,73 @@ const getLookupResults = async (entities, options, requestWithDefaults, Logger) 
     entitiesWithCustomTypesSpecified
   );
 
-  const queryResults = await getQueryResultsByEntity(
-    entitiesPartition,
+  const filteredEntities = filterOutInvalidEntities(entitiesPartition, options, Logger);
+  const channels = await getSlackChannels(options, requestWithDefaults, Logger);
+
+  const foundMessagesByEntity = options.allowSearchingMessages
+    ? await searchMessages(
+        filteredEntities,
+        channels,
+        options,
+        requestWithDefaults,
+        Logger
+      )
+    : [];
+
+  const lookupResults = createLookupResults(
+    filteredEntities,
+    channels,
+    foundMessagesByEntity,
     options,
-    requestWithDefaults,
     Logger
   );
-
-  const lookupResults = createLookupResults(queryResults, Logger);
 
   return lookupResults.concat(ignoredIpLookupResults);
 };
 
-const getQueryResultsByEntity = async (
-  entitiesPartition,
-  options,
-  requestWithDefaults,
-  Logger
-) =>
-  Promise.all(
-    map(async (entity) => {
-      const itemRecords = await queryItemRecords(entity, options, requestWithDefaults, Logger);
+const filterOutInvalidEntities = (entities, options, Logger) =>
+  flow(
+    filter((entity) => {
+      const trimmedEntityValue = flow(get('value'), trim)(entity);
 
-      return { entity, itemRecords };
-    }, entitiesPartition)
-  );
+      const isNotWhitespace = size(trimmedEntityValue);
 
-const queryItemRecords = async (entity, options, requestWithDefaults, Logger) => [
-  { a: 1, b: 2 }
-];
+      const noDuplicateEntityValue = !flow(
+        filter(negate(isEqual(entity))),
+        some(
+          flow(
+            get('rawValue'),
+            trim,
+            toLower,
+            eq(flow(get('rawValue'), trim, toLower)(entity))
+          )
+        )
+      )(entities);
+
+      const isCorrectType =
+        !options.ignoreEntityTypes ||
+        ((entity.type === 'custom' || entity.type === 'allText') &&
+          (!entity.types || size(entity.types) === 1) &&
+          !(
+            entity.isIP ||
+            entity.hashType ||
+            entity.isGeo ||
+            entity.isEmail ||
+            entity.isURL ||
+            entity.isDomain
+          ) &&
+          noDuplicateEntityValue);
+
+      const entityLength = size(trimmedEntityValue);
+      
+      return (
+        isNotWhitespace &&
+        isCorrectType &&
+        entityLength >= getOr(entityLength, 'minLength', options) &&
+        entityLength <= getOr(entityLength, 'maxLength', options)
+      );
+    }),
+    uniqBy(flow(get('value'), trim))
+  )(entities);
 
 module.exports = getLookupResults;

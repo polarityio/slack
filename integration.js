@@ -1,13 +1,13 @@
 'use strict';
 
-const validateOptions = require('./src/validateOptions');
+const _validateOptions = require('./src/validateOptions');
 const createRequestWithDefaults = require('./src/createRequestWithDefaults');
 
 const getLookupResults = require('./src/getLookupResults');
 const { parseErrorToReadableJSON } = require('./src/dataTransformations');
 
-const onMessageExample = require('./src/onMessageExample');
-
+const sendMessage = require('./src/sendMessage');
+const loadMoreSearchMessages = require('./src/loadMoreSearchMessages');
 
 let Logger;
 let requestWithDefaults;
@@ -39,35 +39,17 @@ const doLookup = async (entities, options, cb) => {
   cb(null, lookupResults);
 };
 
-const onDetails = async (lookupObject, options, cb) => {
-  try {
-    //TODO: Change data when overlay result is opened
-
-    return cb(null, lookupObject);
-  } catch (error) {
-    const err = parseErrorToReadableJSON(error);
-    Logger.error({ error, formattedError: err }, 'On Details Failed');
-
-    return cb({
-      detail: error.message || 'Command Failed',
-      err
-    });
-  }
-};
-
-
-const getOnMessage = {
-  //TODO: Add on message functions here
-  onMessageExample
-};
+const getOnMessage = { sendMessage, loadMoreSearchMessages };
 
 const onMessage = ({ action, data: actionParams }, options, callback) =>
   getOnMessage[action](actionParams, options, requestWithDefaults, callback, Logger);
+
+const validateOptions = (options, callback) =>
+  _validateOptions(options, callback, Logger);
 
 module.exports = {
   startup,
   validateOptions,
   doLookup,
-  onDetails,
   onMessage
 };

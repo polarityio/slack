@@ -1,6 +1,8 @@
 const fs = require('fs');
+const { eq, get, flow, getOr, some, includes, __ } = require('lodash/fp');
 const request = require('postman-request');
 const config = require('../config/config');
+const { ERROR_MESSAGES } = require('./constants');
 
 const SUCCESSFUL_ROUNDED_REQUEST_STATUS_CODES = [200];
 
@@ -18,7 +20,6 @@ const createRequestWithDefaults = (Logger) => {
     ...(_configFieldIsValid(passphrase) && { passphrase }),
     ...(_configFieldIsValid(proxy) && { proxy }),
     ...(typeof rejectUnauthorized === 'boolean' && { rejectUnauthorized }),
-    //TODO: check if should be true
     json: true
   };
 
@@ -67,28 +68,43 @@ const createRequestWithDefaults = (Logger) => {
 
   const handleAuth = async ({ options, ...requestOptions }) => ({
     ...requestOptions,
-    //TODO: add auth
+    headers: {
+      ...requestOptions.headers,
+      Authorization: `Bearer ${
+        some(includes(__, requestOptions.url), ['search.messages'])
+          ? options.userToken
+          : options.botToken
+      }`
+    }
   });
 
   const checkForStatusError = ({ statusCode, body }, requestOptions) => {
     const requestOptionsWithoutSensitiveData = {
-      //TODO: remove sensitive data
       ...requestOptions,
-      auth: '************',
+      headers: { ...requestOptions.headers, Authorization: 'Bearer ************' },
       options: '************'
     };
 
     Logger.trace({
-      MESSAGE: 'checkForStatusError',
+      MESSAGE: 'Request Ran, Checking Status...',
       statusCode,
       requestOptions: requestOptionsWithoutSensitiveData,
       body
     });
 
     const roundedStatus = Math.round(statusCode / 100) * 100;
-    if (!SUCCESSFUL_ROUNDED_REQUEST_STATUS_CODES.includes(roundedStatus)) {
+    const statusCodeNotSuccessful =
+      !SUCCESSFUL_ROUNDED_REQUEST_STATUS_CODES.includes(roundedStatus);
+      
+    const requestIsNotOk = flow(get('ok'), eq(false))(body)
+    if (statusCodeNotSuccessful || requestIsNotOk) {
       const requestError = Error('Request Error');
-      requestError.status = statusCode;
+      requestError.status = statusCodeNotSuccessful ? statusCode : body.error;
+      requestError.detail = getOr(
+        'Sending Message Unsuccessful',
+        get('error', body),
+        ERROR_MESSAGES
+      );
       requestError.description = JSON.stringify(body);
       requestError.requestOptions = JSON.stringify(requestOptionsWithoutSensitiveData);
       throw requestError;
