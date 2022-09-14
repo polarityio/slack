@@ -47,6 +47,7 @@
           - chat:write
           - chat:write.customize
           - chat:write.public
+          - users:read
 
     settings:
       org_deploy_enabled: false
