@@ -1,7 +1,11 @@
 {
   "main": "./integration.js",
   "name": "slack",
+<<<<<<< HEAD
   "version": "3.0.0000-beta",
+=======
+  "version": "3.0.1-beta",
+>>>>>>> develop
   "private": true,
   "license": "MIT",
   "author": "Polarity",
