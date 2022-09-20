@@ -1,8 +1,8 @@
 const fs = require('fs');
-const { get, set, includes, flow, split, last } = require('lodash/fp');
+const { get, set, includes, flow, split, last, filter, concat, join, negate } = require('lodash/fp');
 
 const LOCAL_STATE_FILEPATH = './state.json';
-
+const ENV_VAR_FILEPATH = './slack-command/.env';
 const getStateValueByPath = (path) =>
   get(
     path,
@@ -18,9 +18,8 @@ const getStateValueByPath = (path) =>
 
 const setStateValueForPath = (path, newValue) => {
   const isConfig = includes('config', path);
-
   if (isConfig) {
-    process.env[get(flow(split('.'), last)(path), configEnvVarMapping)] = newValue;
+    setEnvVarInFile(get(flow(split('.'), last)(path), configEnvVarMapping), newValue);
     return;
   }
   const localState = _getLocalState(LOCAL_STATE_FILEPATH);
@@ -36,12 +35,15 @@ const _getLocalState = (path = LOCAL_STATE_FILEPATH) =>
   fs.existsSync(path) ? JSON.parse(fs.readFileSync(path, 'utf8')) : {};
 
 
-const getConfigEnvironmentVariables = () => ({
+const getConfigEnvironmentVariables = () => {
+  const environment = require('dotenv').config({ path: ENV_VAR_FILEPATH }).parsed;
+
+  return{
   //https://api.slack.com/authentication/config-tokens
-  slackBotToken: process.env.POLARITY_SLACK_APP_BOT_TOKEN,
-  appToken: process.env.POLARITY_SLACK_APP_TOKEN,
-  appRefreshToken: process.env.POLARITY_SLACK_APP_REFRESH_TOKEN
-});
+  slackBotToken: environment.POLARITY_SLACK_APP_BOT_TOKEN,
+  appToken: environment.POLARITY_SLACK_APP_TOKEN,
+  appRefreshToken: environment.POLARITY_SLACK_APP_REFRESH_TOKEN
+}};
 
 const configEnvVarMapping = {
   slackBotToken: "POLARITY_SLACK_APP_BOT_TOKEN",
@@ -49,6 +51,16 @@ const configEnvVarMapping = {
   appRefreshToken: "POLARITY_SLACK_APP_REFRESH_TOKEN"
 };
 
+const setEnvVarInFile = (key,value) => {
+  const envFileContent = fs.readFileSync(ENV_VAR_FILEPATH, 'utf8');
+  const newEnvVars = flow(
+    split('\n'),
+    filter(negate(includes(key))),
+    concat(`${key}="${value}"`),
+    join('\n')
+  )(envFileContent);
+  fs.writeFileSync(ENV_VAR_FILEPATH, newEnvVars);
+}
 
 /** Current State Schema
 {

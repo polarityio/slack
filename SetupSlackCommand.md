@@ -1,9 +1,10 @@
 # Create Polarity Slack App
 
 1. Go to the [./config/config.js](./config/config.js) file, and change the `slackCommandServer` property information to your Polarity Server's information, making sure the `portNumber` you have set has been exposed from the polarity server.
+    > ***NOTE***: Ensure your `polarityUrl` property does not end with `/`
 
-2. Set the environment variable `POLARITY_SLACK_APP_BOT_TOKEN` to your Slack Bot Token.  
-   > ***NOTE***: For local development and testing, or for the `npm run  it would also be beneficial to set your `POLARITY_SLACK_APP_TOKEN` & `POLARITY_SLACK_APP_REFRESH_TOKEN` as well, which can be found/generated [HERE](https://api.slack.com/authentication/config-tokens) by Authorized Slack App Collaborators in Slack.
+2. Set the environment variable `POLARITY_SLACK_APP_BOT_TOKEN` to your Slack Bot Token inside of the [./slack-command/.env](./slack-command/.env) file.  
+   > ***NOTE***: For local development and testing, or for the `npm run updateAppManifest` command, it would also be beneficial to set your `POLARITY_SLACK_APP_TOKEN` & `POLARITY_SLACK_APP_REFRESH_TOKEN` as well, which can be found/generated [HERE](https://api.slack.com/authentication/config-tokens) by Authorized Slack App Collaborators in Slack.
    <div>
       <img alt="Authorized Slack App Collaborators" src="./assets/app-collaborators.png">
     </div>

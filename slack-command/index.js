@@ -22,7 +22,7 @@ app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 const slackCommandStartup = async (Logger, runningAsDeveloper) => {
-  if (process.argv[2] === '--dev' || runningAsDeveloper) {
+  if (runningAsDeveloper) {
     const ngrok = require('ngrok');
 
     await ngrok.disconnect(); // stops all
@@ -36,6 +36,7 @@ const slackCommandStartup = async (Logger, runningAsDeveloper) => {
       onLogEvent: (data) =>
         Logger.trace(JSON.stringify({ MESSAGE: 'NGROK EVENT LOG', data }, null, 2)) // returns stdout messages from ngrok process
     });
+    
     Logger.trace({
       MESSAGE: 'New ngrok URLs',
       url,
@@ -94,6 +95,5 @@ const slackCommandStartup = async (Logger, runningAsDeveloper) => {
   Logger.info(`\n\n******* Slack Command Server Running on Port ${PORT_NUMBER} *******\n\n`)
 };
 
-slackCommandStartup(console);
 
 module.exports = slackCommandStartup;

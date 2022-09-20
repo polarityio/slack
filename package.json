@@ -6,11 +6,13 @@
   "license": "MIT",
   "author": "Polarity",
   "scripts": {
-    "startCommandServer": "node ./slack-command/index.js",
-    "startCommandServerDev": "node ./slack-command/index.js --dev"
+    "startCommandServer": "node -e \"require('./slack-command/index.js')(console)\"",
+    "startCommandServerDev": "node -e \"require('./slack-command/index.js')(console, true)\"",
+    "updateAppManifest": "node -e \"require('./slack-command/slack/publish/publishConfigManifest.js')()\""
   },
   "dependencies": {
     "body-parser": "^1.20.0",
+    "dotenv": "^16.0.2",
     "express": "^4.18.1",
     "lodash": "^4.17.21",
     "node-cache": "^5.1.2",
