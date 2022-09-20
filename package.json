@@ -6,7 +6,7 @@
   "license": "MIT",
   "author": "Polarity",
   "scripts": {
-    "createEnvFile": "echo \"POLARITY_SLACK_APP_BOT_TOKEN=\\\"\\\"\nPOLARITY_SLACK_APP_REFRESH_TOKEN=\\\"\\\"\nPOLARITY_SLACK_APP_TOKEN=\\\"\\\"\" > ./slack-command/.env",
+    "createEnvFile": "echo \"POLARITY_SLACK_APP_BOT_TOKEN=\\\"\\\"\nPOLARITY_SLACK_APP_TOKEN=\\\"\\\"\nPOLARITY_SLACK_APP_REFRESH_TOKEN=\\\"\\\"\" > ./slack-command/.env",
     "updateAppManifest": "node -e \"require('./slack-command/slack/publish/publishConfigManifest.js')()\"",
     "startCommandServer": "node -e \"require('./slack-command/index.js')(console)\"",
     "startCommandServerDev": "node -e \"require('./slack-command/index.js')(console, true)\""
