@@ -3,7 +3,7 @@
 1. Go to the [./config/config.js](./config/config.js) file, and change the `slackCommandServer` property information to your Polarity Server's information, making sure the `portNumber` you have set has been exposed from the polarity server.
 
 2. Set the environment variable `POLARITY_SLACK_APP_BOT_TOKEN` to your Slack Bot Token.  
-   > ***NOTE***: For local development and testing it would also be beneficial to set your `POLARITY_SLACK_APP_TOKEN` & `POLARITY_SLACK_APP_REFRESH_TOKEN` as well, which can be found/generated [HERE](https://api.slack.com/authentication/config-tokens).
+   > ***NOTE***: For local development and testing it would also be beneficial to set your `POLARITY_SLACK_APP_TOKEN` & `POLARITY_SLACK_APP_REFRESH_TOKEN` as well, which can be found/generated [HERE](https://api.slack.com/authentication/config-tokens) in Slack.
    
 > ***NOTE***: STEPS 3-5 can be skipped if developing locally
 

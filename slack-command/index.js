@@ -1,4 +1,3 @@
-const ngrok = require('ngrok');
 const express = require('express');
 const bodyParser = require('body-parser');
 const {
@@ -24,6 +23,8 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 const slackCommandStartup = async (Logger, runningAsDeveloper) => {
   if (process.argv[2] === '--dev' || runningAsDeveloper) {
+    const ngrok = require('ngrok');
+
     await ngrok.disconnect(); // stops all
     await ngrok.kill(); // kills ngrok process
 
