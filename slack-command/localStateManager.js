@@ -1,5 +1,17 @@
 const fs = require('fs');
-const { get, set, includes, flow, split, last, filter, concat, join, negate } = require('lodash/fp');
+const {
+  get,
+  set,
+  includes,
+  flow,
+  split,
+  last,
+  filter,
+  concat,
+  join,
+  negate,
+  reverse
+} = require('lodash/fp');
 
 const LOCAL_STATE_FILEPATH = './state.json';
 const ENV_VAR_FILEPATH = './slack-command/.env';
@@ -57,6 +69,7 @@ const setEnvVarInFile = (key,value) => {
     split('\n'),
     filter(negate(includes(key))),
     concat(`${key}="${value}"`),
+    reverse,
     join('\n')
   )(envFileContent);
   fs.writeFileSync(ENV_VAR_FILEPATH, newEnvVars);

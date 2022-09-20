@@ -39,26 +39,15 @@ const publishUrlToManifest = async (url) =>
         oauth_config: {
           redirect_urls: ['https://polarity.io/integrations/'],
           scopes: {
-            user: [
-              'chat:write',
-              'search:read',
-              'channels:read',
-              'mpim:read',
-              'im:read',
-              'groups:read'
-            ],
+            user: ['search:read'],
             bot: [
-              'app_mentions:read',
               'channels:read',
+              'groups:read',
+              'im:read',
+              'mpim:read',
               'chat:write',
               'chat:write.customize',
               'chat:write.public',
-              'groups:read',
-              'groups:write',
-              'im:read',
-              'mpim:read',
-              'groups:history',
-              'commands',
               'users:read',
               'users.profile:read'
             ]
@@ -67,7 +56,7 @@ const publishUrlToManifest = async (url) =>
         settings: {
           event_subscriptions: {
             request_url: `${url}/events`,
-            bot_events: ['app_home_opened', 'app_mention']
+            bot_events: ['app_home_opened']
           },
           interactivity: {
             is_enabled: true,
