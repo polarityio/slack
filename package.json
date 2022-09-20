@@ -8,8 +8,8 @@
   "scripts": {
     "createEnvFile": "echo \"POLARITY_SLACK_APP_BOT_TOKEN=\\\"\\\"\nPOLARITY_SLACK_APP_TOKEN=\\\"\\\"\nPOLARITY_SLACK_APP_REFRESH_TOKEN=\\\"\\\"\" > ./slack-command/.env",
     "updateAppManifest": "node -e \"require('./slack-command/slack/publish/publishConfigManifest.js')()\"",
-    "startCommandServer": "node -e \"require('./slack-command/index.js')(console)\"",
-    "startCommandServerDev": "node -e \"require('./slack-command/index.js')(console, true)\""
+    "startCommandServer": "nohup node -e \"require('./slack-command/index.js')(console)\" > ./logs/slack-command.log 2>&1 &",
+    "startCommandServerDev": "nohup node -e \"require('./slack-command/index.js')(console, true)\" > ./logs/slack-command.log 2>&1 &"
   },
   "dependencies": {
     "body-parser": "^1.20.0",
@@ -17,7 +17,7 @@
     "express": "^4.18.1",
     "lodash": "^4.17.21",
     "node-cache": "^5.1.2",
-    "postman-request": "*"
+    "postman-request": "^2.88.1-postman.31"
   },
   "devDependencies": {
     "ngrok": "^4.3.1"
