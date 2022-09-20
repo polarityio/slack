@@ -16,7 +16,10 @@ const {
   isEmpty,
   get,
   isArray,
-  identity
+  identity,
+  join,
+  split,
+  getOr
 } = require('lodash/fp');
 
 const { IGNORED_IPS } = require('./constants');
@@ -146,14 +149,13 @@ const millisToHoursMinutesAndSeconds = (millis) => {
   );
 };
 
-
 // const standardizePossibleXmlList = (arrayOrObject) =>
 //   arrayOrObject &&
 //   JSON.stringify(isArray(arrayOrObject) ? arrayOrObject : [arrayOrObject]);
 
 // const xml2js = require('xml2js');
 
-// const xmlToJson = async (xml, Logger) => {
+// const xmlToJson = async (xml) => {
 //   try {
 //     const parser = new xml2js.Parser({
 //       normalizeTags: true,
@@ -164,11 +166,17 @@ const millisToHoursMinutesAndSeconds = (millis) => {
 //     return await parser.parseStringPromise(xml);
 //   } catch (e) {
 //     const err = parseErrorToReadableJSON(e);
-//     Logger.error({ MESSAGE: 'Failed to Parse XML', xml, err });
+//     console.error({ MESSAGE: 'Failed to Parse XML', xml, err });
 //   }
 // };
 
 const sleep = async (ms = 2000) => new Promise((r) => setTimeout(r, ms));
+
+const getSetCookies = flow(get('set-cookie'), map(flow(split('; '), first)), join('; '));
+
+const encodeBase64 = (str) => str && Buffer.from(str).toString('base64');
+
+const decodeBase64 = (str) => str && Buffer.from(str, 'base64').toString('ascii');
 
 module.exports = {
   getKeys,
@@ -185,5 +193,8 @@ module.exports = {
   // xmlToJson,
   and,
   or,
-  sleep
+  sleep,
+  getSetCookies,
+  encodeBase64,
+  decodeBase64
 };

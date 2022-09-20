@@ -18,6 +18,10 @@ To learn more about Slack, visit the [official website](https://slack.com/).
 - ***Messaging:*** To allow messaging in private channels, you must first send a `@Polarity` message in the private channel, and invite the app to the channel.
 
 
+## Polarity Slack Command
+> To Enable to `/polarity` Slack Command follow the instructions found in the [**Polarity Slack Command Setup Guide**](./SetupSlackCommand.md).
+
+
 ## Slack Integration Options
 ### Slack API URL
 The URL of the Slack API you would like to connect to.  

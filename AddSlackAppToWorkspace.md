@@ -30,8 +30,8 @@
     features:
       app_home:
         home_tab_enabled: false
-        messages_tab_enabled: true
-        messages_tab_read_only_enabled: true
+        messages_tab_enabled: false
+        messages_tab_read_only_enabled: false
       bot_user:
         display_name: Polarity
         always_online: true
@@ -48,6 +48,7 @@
           - chat:write.customize
           - chat:write.public
           - users:read
+          - users.profile:read
 
     settings:
       org_deploy_enabled: false
