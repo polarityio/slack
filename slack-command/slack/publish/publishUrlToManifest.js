@@ -41,6 +41,7 @@ const publishUrlToManifest = async (url) =>
           scopes: {
             user: ['search:read'],
             bot: [
+              'commands',
               'channels:read',
               'groups:read',
               'im:read',

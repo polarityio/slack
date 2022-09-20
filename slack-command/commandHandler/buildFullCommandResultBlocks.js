@@ -24,8 +24,7 @@ const buildFullCommandResultBlocks = (
       },
       {
         type: 'mrkdwn',
-        text: `> _<https://www.youtube.com/watch?v=dQw4w9WgXcQ|Search In Polarity>_`
-        // text: `> _<https://dev.polarity/search?q=${searchText}|Search In Polarity>_`
+        text: `> _<https://dev.polarity/search?q=${searchText}|Search In Polarity>_`
       }
     ]
   },

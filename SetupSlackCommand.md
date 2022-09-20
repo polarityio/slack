@@ -1,10 +1,10 @@
-# Create Polarity Slack App
+# Polarity Slack Command Setup Guide
 
 1. Go to the [./config/config.js](./config/config.js) file, and change the `slackCommandServer` property information to your Polarity Server's information, making sure the `portNumber` you have set has been exposed from the polarity server.
     > ***NOTE***: Ensure your `polarityUrl` property does not end with `/`
 
 
-2. In the terminal run `npm run createEnvFile`, then Set the environment variable `POLARITY_SLACK_APP_BOT_TOKEN` to your Slack Bot Token inside of the generated [./slack-command/.env](./slack-command/.env) file.  
+2. In the terminal run `npm run createEnvFile`, then Set the environment variable `POLARITY_SLACK_APP_BOT_TOKEN` to your Slack Bot Token (_from the [Polarity App Installation Guide](./AddSlackAppToWorkspace.md) Step 12_) inside of the generated [./slack-command/.env](./slack-command/.env) file.  
    > ***NOTE***: For local development and testing, or for the `npm run updateAppManifest` command, it would also be beneficial to set your `POLARITY_SLACK_APP_TOKEN` & `POLARITY_SLACK_APP_REFRESH_TOKEN` as well, which can be found/generated [HERE](https://api.slack.com/authentication/config-tokens) by Authorized Slack App Collaborators in Slack.
    <div>
       <img alt="Authorized Slack App Collaborators" src="./assets/app-collaborators.png">
@@ -44,6 +44,7 @@
         user:
           - search:read
         bot:
+          - commands
           - channels:read
           - groups:read
           - im:read
@@ -76,7 +77,7 @@
       <img alt="Select Polarity App" src="./assets/select-polarity-app.png">
     </div>
 
-8. Enter valid Polarity Credentials to the Slack App Home, Select which Integrations you wish to include in your search, and begin searching
+8. Enter valid Polarity Credentials to the Slack App Home, Select which Integrations you wish to Include in your Search, and begin Searching!
     <div>
       <img alt="Slack App Home Login" src="./assets/slack-app-home.png">
       <img alt="Slack App Home Include In Search" src="./assets/select-include-in-search.png">

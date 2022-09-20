@@ -1,4 +1,4 @@
-# Create Polarity Slack App
+# Polarity App Installation Guide
 
 1. Go to https://api.slack.com/apps/
 2. Click on `Create New App` 
