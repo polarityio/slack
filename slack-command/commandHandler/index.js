@@ -1,4 +1,4 @@
-const Parselarity = require('../polarity/parselarityjs/parselarity');
+const { Parselarity } = require('../polarity');
 const { getSlackUser } = require('../slack');
 const { requestWithDefaults } = require('../request');
 const { getStateValueByPath } = require('../localStateManager');

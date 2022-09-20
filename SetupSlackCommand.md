@@ -3,7 +3,10 @@
 1. Go to the [./config/config.js](./config/config.js) file, and change the `slackCommandServer` property information to your Polarity Server's information, making sure the `portNumber` you have set has been exposed from the polarity server.
 
 2. Set the environment variable `POLARITY_SLACK_APP_BOT_TOKEN` to your Slack Bot Token.  
-   > ***NOTE***: For local development and testing it would also be beneficial to set your `POLARITY_SLACK_APP_TOKEN` & `POLARITY_SLACK_APP_REFRESH_TOKEN` as well, which can be found/generated [HERE](https://api.slack.com/authentication/config-tokens) in Slack.
+   > ***NOTE***: For local development and testing, or for the `npm run  it would also be beneficial to set your `POLARITY_SLACK_APP_TOKEN` & `POLARITY_SLACK_APP_REFRESH_TOKEN` as well, which can be found/generated [HERE](https://api.slack.com/authentication/config-tokens) by Authorized Slack App Collaborators in Slack.
+   <div>
+      <img alt="Authorized Slack App Collaborators" src="./assets/app-collaborators.png">
+    </div>
    
 > ***NOTE***: STEPS 3-5 can be skipped if developing locally
 
@@ -62,7 +65,7 @@
       token_rotation_enabled: false
     ```
 
-6. Navigate in the terminal to the Slack Integration folder, and run the command `npm run startCommandServer`, and ensure the server is running correctly, and the message `******* Slack Command Server Running on Port <port-number> *******` is displayed in the terminal.
+6. Navigate in the terminal to the top level Slack Integration folder `./slack`, and run the command `npm run startCommandServer`, and ensure the server is running correctly, and the message `******* Slack Command Server Running on Port <port-number> *******` is displayed in the terminal.
     > ***NOTE***: If running for local development run `npm run startCommandServerDev` instead
 
 7. Add the Polarity App to your Slack Desktop or Browser App
