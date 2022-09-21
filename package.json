@@ -8,10 +8,11 @@
   "scripts": {
     "createEnvFile": "echo \"POLARITY_SLACK_APP_BOT_TOKEN=\\\"\\\"\nPOLARITY_SLACK_APP_TOKEN=\\\"\\\"\nPOLARITY_SLACK_APP_REFRESH_TOKEN=\\\"\\\"\" > ./slack-command/.env",
     "updateAppManifest": "node -e \"require('./slack-command/slack/publish/publishConfigManifest.js')()\"",
-    "startCommandServer": "nohup node -e \"require('./slack-command/index.js')(console)\" > ./logs/slack-command.log 2>&1",
-    "startCommandServerDev": "nohup node -e \"require('./slack-command/index.js')(console, true)\" > ./logs/slack-command.log 2>&1",
-    "stopCommandServer": "kill $(netstat -vanp tcp | grep $(node -e \"console.log(require('./config/config.js').slackCommandServer.portNumber)\") | awk '{print $9}') 2>/dev/null && killall ngrok 2>/dev/null",
-    "restartCommandServer": "npm run stopCommandServer && startCommandServerDev"
+    "startCommandServer": "nohup node -e \"require('./slack-command/index.js')(console)\" > ./logs/slack-command.log 2>&1 &",
+    "startCommandServerDev": "nohup node -e \"require('./slack-command/index.js')(console, true)\" > ./logs/slack-command.log 2>&1 &",
+    "stopCommandServer": "kill $(netstat -vanp tcp | grep $(node -e \"console.log(require('./config/config.js').slackCommandServer.portNumber)\") | awk '{print $9}') 2>/dev/null || true && killall ngrok 2>/dev/null || true",
+    "restartCommandServer": "npm run stopCommandServer; npm run startCommandServer",
+    "restartCommandServerDev": "npm run stopCommandServer; npm run startCommandServerDev"
   },
   "dependencies": {
     "body-parser": "^1.20.0",
