@@ -32,12 +32,12 @@ const slackCommandStartup = async (Logger, runningAsDeveloper) => {
       addr: PORT_NUMBER, // port or network address, defaults to 80
       region: 'us', // one of ngrok regions (us, eu, au, ap, sa, jp, in), defaults to us
       onStatusChange: (data) =>
-        Logger.trace(JSON.stringify({ MESSAGE: 'NGROK STATUS CHANGE', data }, null, 2)), // 'closed' - connection is lost, 'connected' - reconnected
+        Logger.info(JSON.stringify({ MESSAGE: 'NGROK STATUS CHANGE', data }, null, 2)), // 'closed' - connection is lost, 'connected' - reconnected
       onLogEvent: (data) =>
-        Logger.trace(JSON.stringify({ MESSAGE: 'NGROK EVENT LOG', data }, null, 2)) // returns stdout messages from ngrok process
+        Logger.info(JSON.stringify({ MESSAGE: 'NGROK EVENT LOG', data }, null, 2)) // returns stdout messages from ngrok process
     });
     
-    Logger.trace({
+    Logger.info({
       MESSAGE: 'New ngrok URLs',
       url,
       actionURL: `${url}/actions`,

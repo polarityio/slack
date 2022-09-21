@@ -68,7 +68,7 @@
       token_rotation_enabled: false
     ```
 
-6. Navigate in the terminal to the top level Slack Integration folder `./slack`, and run the command `npm run startCommandServer`, and ensure the server is running correctly, and the message `******* Slack Command Server Running on Port <port-number> *******` is displayed in the terminal.
+6. Navigate in the terminal to the top level Slack Integration folder `./slack`, and run the command `npm run startCommandServer`, and ensure the server is running correctly, and the message `******* Slack Command Server Running on Port <port-number> *******` in your Command Server Log File [./logs/slack-command.log](./logs/slack-command.log).
     > ***NOTE***: If running for local development run `npm run startCommandServerDev` instead
 
 7. Add the Polarity App to your Slack Desktop or Browser App
