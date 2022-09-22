@@ -8,6 +8,7 @@
   "scripts": {
     "createEnvFile": "echo \"POLARITY_SLACK_APP_BOT_TOKEN=\\\"\\\"\nPOLARITY_SLACK_APP_TOKEN=\\\"\\\"\nPOLARITY_SLACK_APP_REFRESH_TOKEN=\\\"\\\"\" > ./slack-command/.env",
     "updateAppManifest": "node -e \"require('./slack-command/slack/publish/publishConfigManifest.js')()\"",
+    "updateAppManifestWithHttps": "node -e \"require('./slack-command/slack/publish/publishConfigManifest.js')(true)\"",
     "startCommandServer": "mkdir -p ./logs && echo \"********  Slack Command Server is Running  ******** \n\" && nohup node -e \"require('./slack-command/index.js')(console)\" > ./logs/slack-command-server.log 2>&1 &",
     "startCommandServerDev": "mkdir -p ./logs && echo \"********  Slack Command Server is Running  ******** \n\" && nohup node -e \"require('./slack-command/index.js')(console, true)\" > ./logs/slack-command-server.log 2>&1 &",
     "stopCommandServer": "node -e \"require('./scripts/stopCommandServer.js')()\"",

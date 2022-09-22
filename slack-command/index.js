@@ -60,8 +60,6 @@ const slackCommandStartup = async (Logger, runningAsDeveloper) => {
   });
 
   app.post('/actions', async (req, res) => {
-    res.send({});
-
     const actionPayload = flow(get('body.payload'), JSON.parse)(req);
 
     const handleThisAction = async (...args) =>
@@ -84,12 +82,12 @@ const slackCommandStartup = async (Logger, runningAsDeveloper) => {
         },
         'Slack Action Handling Failed'
       );
+    } finally {
+      res.send({ ...handledActionResponseToSendToSlack });
     }
   });
 
   app.post('/events', async (req, res) => {
-    res.send({ challenge: get('body.challenge', req) });
-
     const handleThisEvent = async (...args) =>
       await getOr(stubFalse, get('body.event.type', req), eventHandlers)(...args);
 
@@ -102,6 +100,11 @@ const slackCommandStartup = async (Logger, runningAsDeveloper) => {
         { event: get('body.event', req), error, formattedError: err },
         'Slack Event Handling Failed'
       );
+    } finally {
+      res.send({
+        ...handledEventResponseToSendToSlack,
+        challenge: get('body.challenge', req)
+      });
     }
   });
 
