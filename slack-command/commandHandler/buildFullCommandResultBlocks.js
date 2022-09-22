@@ -24,7 +24,9 @@ const buildFullCommandResultBlocks = (
       },
       {
         type: 'mrkdwn',
-        text: `> _<https://dev.polarity/search?q=${searchText}|Search In Polarity>_`
+        text: `> _<${
+          require('../../config/config.js').slackCommandServer.polarityUrl
+        }/search?q=${searchText}|Search In Polarity>_`
       }
     ]
   },
