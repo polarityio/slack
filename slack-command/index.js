@@ -1,19 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const {
-  getOr,
-  get,
-  stubFalse,
-  flow,
-  split,
-  head,
-  replace,
-} = require('lodash/fp');
+const { getOr, get, stubFalse, flow, split, head, replace } = require('lodash/fp');
 
 const { publishUrlToManifest } = require('./slack');
 const handleSlackCommand = require('./commandHandler');
 const eventHandlers = require('./eventHandlers');
 const actionHandlers = require('./actionHandlers');
+const { parseErrorToReadableJSON } = require('../src/dataTransformations');
 
 const PORT_NUMBER = require('../config/config').slackCommandServer.portNumber;
 
@@ -36,7 +29,7 @@ const slackCommandStartup = async (Logger, runningAsDeveloper) => {
       onLogEvent: (data) =>
         Logger.info(JSON.stringify({ MESSAGE: 'NGROK EVENT LOG', data }, null, 2)) // returns stdout messages from ngrok process
     });
-    
+
     Logger.info({
       MESSAGE: 'New ngrok URLs',
       url,
@@ -55,10 +48,20 @@ const slackCommandStartup = async (Logger, runningAsDeveloper) => {
     const searchText = flow(get('body.text'), replace(/[\*\_\`]/g, ''))(req);
     const responseUrl = get('body.response_url', req);
 
-    await handleSlackCommand(slackUserId, searchText, responseUrl);
+    try {
+      await handleSlackCommand(slackUserId, searchText, responseUrl);
+    } catch (error) {
+      const err = parseErrorToReadableJSON(error);
+      Logger.error(
+        { slackUserId, searchText, responseUrl, error, formattedError: err },
+        'Slack Command Handling Failed'
+      );
+    }
   });
 
   app.post('/actions', async (req, res) => {
+    res.send({});
+
     const actionPayload = flow(get('body.payload'), JSON.parse)(req);
 
     const handleThisAction = async (...args) =>
@@ -70,30 +73,43 @@ const slackCommandStartup = async (Logger, runningAsDeveloper) => {
     let handledActionResponseToSendToSlack;
     try {
       handledActionResponseToSendToSlack = await handleThisAction(actionPayload);
-    } finally {
-      res.send({ ...handledActionResponseToSendToSlack });
+    } catch (error) {
+      const err = parseErrorToReadableJSON(error);
+      Logger.error(
+        {
+          actionPayload,
+          handledActionResponseToSendToSlack,
+          error,
+          formattedError: err
+        },
+        'Slack Action Handling Failed'
+      );
     }
   });
 
   app.post('/events', async (req, res) => {
+    res.send({ challenge: get('body.challenge', req) });
+
     const handleThisEvent = async (...args) =>
       await getOr(stubFalse, get('body.event.type', req), eventHandlers)(...args);
 
     let handledEventResponseToSendToSlack;
     try {
       handledEventResponseToSendToSlack = await handleThisEvent(req);
-    } finally {
-      res.send({
-        ...handledEventResponseToSendToSlack,
-        challenge: get('body.challenge', req)
-      });
+    } catch (error) {
+      const err = parseErrorToReadableJSON(error);
+      Logger.error(
+        { event: get('body.event', req), error, formattedError: err },
+        'Slack Event Handling Failed'
+      );
     }
   });
 
   app.listen(PORT_NUMBER);
 
-  Logger.info(`\n\n******* Slack Command Server Running on Port ${PORT_NUMBER} *******\n\n`)
+  Logger.info(
+    `\n\n******* Slack Command Server Running on Port ${PORT_NUMBER} *******\n\n`
+  );
 };
-
 
 module.exports = slackCommandStartup;

@@ -13,29 +13,6 @@ const { getStateValueByPath, setStateValueForPath } = require('../localStateMana
 
 const { requestWithDefaults } = require('../request');
 
-const getPolarityIntegrations = async (slackUserId) =>
-  flow(
-    get('body.data'),
-    filter(
-        flow(pick(['attributes.description', 'attributes.subscribed']), negate(isEmpty))
-    ),
-    map((int) => ({
-      integration: {
-        id: int.id,
-        name: get('attributes.name', int),
-        description: get('attributes.description', int)
-      },
-      includeInSearch: get('attributes.subscribed', int)
-    }))
-  )(
-    await requestWithDefaults({
-      method: 'GET',
-      site: 'polarity',
-      route: 'v2/integrations',
-      slackUserId
-    })
-  );
-
 const addPolarityIntegrationsToState = async (slackUserId) => {
   const intSubStatePath = `${slackUserId}.slackAppHomeState.integrationSubscriptions`;
   const integrationSubscriptionsState = getStateValueByPath(intSubStatePath);
@@ -60,4 +37,28 @@ const addPolarityIntegrationsToState = async (slackUserId) => {
 
   setStateValueForPath(intSubStatePath, newIntegrationSubscriptionsState);
 };
+
+const getPolarityIntegrations = async (slackUserId) =>
+  flow(
+    get('body.data'),
+    filter(
+      flow(pick(['attributes.description', 'attributes.subscribed']), negate(isEmpty))
+    ),
+    map((int) => ({
+      integration: {
+        id: int.id,
+        name: get('attributes.name', int),
+        description: get('attributes.description', int)
+      },
+      includeInSearch: get('attributes.subscribed', int)
+    }))
+  )(
+    await requestWithDefaults({
+      method: 'GET',
+      site: 'polarity',
+      route: 'v2/integrations',
+      slackUserId
+    })
+  );
+  
 module.exports = addPolarityIntegrationsToState;
