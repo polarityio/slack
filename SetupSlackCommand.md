@@ -1,16 +1,19 @@
 # Polarity Slack Command Setup Guide
 
-1. Go to the [./config/config.js](./config/config.js) file, and change the `slackCommandServer` property information to your Polarity Server's information, making sure the `portNumber` you have set has been exposed from the polarity server.
+1. Go to the [./config/config.js](./config/config.js) file, and change the `slackCommandServer`'s `portNumber` & `polarityUrl`properties to your Polarity Server's information, making sure the `portNumber` you have set has been exposed from the polarity server.
     > ***NOTE***: Ensure your `polarityUrl` property does not end with `/`
 
 
-2. In the terminal run `npm run createEnvFile`, then Set the environment variable `POLARITY_SLACK_APP_BOT_TOKEN` to your Slack Bot Token (_from the [Polarity App Installation Guide](./AddSlackAppToWorkspace.md) Step 12_) inside of the generated [./slack-command/.env](./slack-command/.env) file.  
-   > ***NOTE***: For local development and testing, or for the `npm run updateAppManifest` command, it would also be beneficial to set your `POLARITY_SLACK_APP_TOKEN` & `POLARITY_SLACK_APP_REFRESH_TOKEN` as well, which can be found/generated [HERE](https://api.slack.com/authentication/config-tokens) by Authorized Slack App Collaborators in Slack.
+2. In the terminal run `npm run createEnvFile`, then Set the `.env` variable `POLARITY_SLACK_APP_BOT_TOKEN` to your Slack Bot Token (_from the [Polarity App Installation Guide](./AddSlackAppToWorkspace.md) Step 12_) inside of the generated `./slack-command/.env` file.
+    > ***NOTE***: The `npm run createEnvFile` script will open the file in `vi`
+
+    > ***NOTE***: For local development and testing, or for the `npm run updateAppManifest` command, it would also be beneficial to set your `POLARITY_SLACK_APP_TOKEN` & `POLARITY_SLACK_APP_REFRESH_TOKEN` as well, which can be found/generated [HERE](https://api.slack.com/authentication/config-tokens) by Authorized Slack App Collaborators in Slack.
    <div>
+      <img alt="Slack App Config Tokens" src="./assets/app-config-tokens.png">
       <img alt="Authorized Slack App Collaborators" src="./assets/app-collaborators.png">
     </div>
    
-> ***NOTE***: STEPS 3-5 can be skipped if you have your  `POLARITY_SLACK_APP_TOKEN` & `POLARITY_SLACK_APP_REFRESH_TOKEN` environment variables set, and instead of these STEPS you can just run `npm run updateAppManifest` in the terminal
+> ***NOTE***: _Steps 3-5_ can be skipped if you have your  `POLARITY_SLACK_APP_TOKEN` & `POLARITY_SLACK_APP_REFRESH_TOKEN` `.env` variables set, and instead of _Steps 3-5_  you can just run `npm run updateAppManifest` in the terminal
 
 3. Go to https://api.slack.com/apps/ and select the `Polarity` App
 
