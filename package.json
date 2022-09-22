@@ -8,9 +8,9 @@
   "scripts": {
     "createEnvFile": "echo \"POLARITY_SLACK_APP_BOT_TOKEN=\\\"\\\"\nPOLARITY_SLACK_APP_TOKEN=\\\"\\\"\nPOLARITY_SLACK_APP_REFRESH_TOKEN=\\\"\\\"\" > ./slack-command/.env",
     "updateAppManifest": "node -e \"require('./slack-command/slack/publish/publishConfigManifest.js')()\"",
-    "startCommandServer": "nohup node -e \"require('./slack-command/index.js')(console)\" > ./logs/slack-command.log 2>&1 &",
-    "startCommandServerDev": "nohup node -e \"require('./slack-command/index.js')(console, true)\" > ./logs/slack-command.log 2>&1 &",
-    "stopCommandServer": "kill $(netstat -vanp tcp | grep $(node -e \"console.log(require('./config/config.js').slackCommandServer.portNumber)\") | awk '{print $9}') 2>/dev/null || true && killall ngrok 2>/dev/null || true",
+    "startCommandServer": "mkdir -p ./logs && echo \"********  Slack Command Server is Running  ******** \n\" && nohup node -e \"require('./slack-command/index.js')(console)\" > ./logs/slack-command-server.log 2>&1 &",
+    "startCommandServerDev": "mkdir -p ./logs && echo \"********  Slack Command Server is Running  ******** \n\" && nohup node -e \"require('./slack-command/index.js')(console, true)\" > ./logs/slack-command-server.log 2>&1 &",
+    "stopCommandServer": "node -e \"require('./scripts/stopCommandServer.js')()\"",
     "restartCommandServer": "npm run stopCommandServer; npm run startCommandServer",
     "restartCommandServerDev": "npm run stopCommandServer; npm run startCommandServerDev"
   },
@@ -20,6 +20,7 @@
     "express": "^4.18.1",
     "lodash": "^4.17.21",
     "node-cache": "^5.1.2",
+    "port-pid": "0.0.7",
     "postman-request": "^2.88.1-postman.31"
   },
   "devDependencies": {
