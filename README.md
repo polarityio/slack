@@ -5,6 +5,7 @@
 The Polarity Slack Integration allows you to ***Send Messages to Channels in Slack*** directly from the Overlay , and ***Search Entities in Slack Channel Messages*** for all entity types.
 
 
+> ***NOTE:*** Instead of `npm install` it would be best to run `npm install --production`.
 > ***NOTE:*** You must go through the process of creating your `Polarity Slack App` in your Slack instance.  Instructions on how to do this can be found in the [**Polarity App Installation Guide**](./AddSlackAppToWorkspace.md).
 
 <div style="display:flex; justify-content:center; align-items: flex-start;">
