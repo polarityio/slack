@@ -2,7 +2,11 @@ const { getStateValueByPath } = require('../localStateManager');
 const getIntegrationsSearchResults = require('./getIntegrationsSearchResults');
 const buildSearchResultSummaryTagBlocks = require('./buildSearchResultSummaryTagBlocks');
 
-const getIntegrationSearchResultsSummaryTagsBlocks = async (slackUserId, entities) => {
+const getIntegrationSearchResultsSummaryTagsBlocks = async (
+  slackUserId,
+  searchText,
+  entities
+) => {
   const integrationSubscriptions = getStateValueByPath(
     `${slackUserId}.slackAppHomeState.integrationSubscriptions`
   );
@@ -15,7 +19,8 @@ const getIntegrationSearchResultsSummaryTagsBlocks = async (slackUserId, entitie
 
   const integrationsSearchSummaryTagBlocks = buildSearchResultSummaryTagBlocks(
     integrationsSearchResults,
-    integrationSubscriptions
+    integrationSubscriptions,
+    searchText
   );
 
   return integrationsSearchSummaryTagBlocks;

@@ -1,11 +1,11 @@
 const addPolarityIntegrationsToState  = require('./addPolarityIntegrationsToState');
 const searchIntegrationById  = require('./searchIntegrationById');
-const Parselarity = require('./parselarityjs/parselarity');
+const parseEntities  = require('./parseEntities');
 
 
 
 module.exports = {
   addPolarityIntegrationsToState,
   searchIntegrationById,
-  Parselarity
+  parseEntities
 };

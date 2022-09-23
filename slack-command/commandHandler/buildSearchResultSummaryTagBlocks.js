@@ -17,7 +17,8 @@ const { and } = require('../../src/dataTransformations');
 
 const buildSearchResultSummaryTagBlocks = (
   integrationsSearchResults,
-  integrationSubscriptions
+  integrationSubscriptions,
+  searchText
 ) =>
   reduce(
     (agg, integrationSearchResults) => {
@@ -26,7 +27,10 @@ const buildSearchResultSummaryTagBlocks = (
         integrationSubscriptions
       );
 
-      const summaryTagBlockStrings = getSummaryTagBlockStrings(integrationSearchResults);
+      const summaryTagBlockStrings = getSummaryTagBlockStrings(
+        integrationSearchResults,
+        searchText
+      );
 
       return size(summaryTagBlockStrings)
         ? agg.concat({
@@ -47,14 +51,20 @@ const getIntegrationDisplayName = (integrationSearchResults, integrationSubscrip
     get('integration.name')
   )(integrationSearchResults);
 
-const getSummaryTagBlockStrings = (integrationSearchResults) =>
+const getSummaryTagBlockStrings = (integrationSearchResults, searchText) =>
   flow(
     get('attributes.results'),
     flatMap(get('data.summary')),
     filter(and(identity, isString)),
     concat(''),
     join('\n>:white_small_square: '),
-    replace(/((http|ftp|https):\/\/)?([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])?/ig, '')
+    replace(
+      /((http|ftp|https):\/\/)?([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])?/gi,
+      (link) =>
+        `<${
+          require('../../config/config.js').slackCommandServer.polarityUrl
+        }/search?q=${searchText}|${link}>`
+    )
   )(integrationSearchResults);
 
 module.exports = buildSearchResultSummaryTagBlocks;

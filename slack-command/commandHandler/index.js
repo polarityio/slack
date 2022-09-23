@@ -1,4 +1,4 @@
-const { Parselarity } = require('../polarity');
+const { parseEntities } = require('../polarity');
 const { getSlackUser } = require('../slack');
 const { requestWithDefaults } = require('../request');
 const { getStateValueByPath } = require('../localStateManager');
@@ -13,12 +13,12 @@ const handleSlackCommand = async (slackUserId, searchText, responseUrl) => {
   );
   if (notLoggedIntoPolarity) return await displayLoginInfoMessage(responseUrl);
 
-  const entities = Parselarity.parse(searchText);
+  const entities = await parseEntities(slackUserId, searchText);
 
   const { profilePicture, slackUserName } = await getSlackUser(slackUserId);
 
   const integrationsSearchResultsSummaryTags =
-    await getIntegrationSearchResultsSummaryTagsBlocks(slackUserId, entities);
+    await getIntegrationSearchResultsSummaryTagsBlocks(slackUserId, searchText, entities);
 
   const commandResultBlocks = buildFullCommandResultBlocks(
     profilePicture,
