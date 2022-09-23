@@ -10,7 +10,8 @@ const {
   identity,
   isString,
   reduce,
-  size
+  size,
+  replace
 } = require('lodash/fp');
 const { and } = require('../../src/dataTransformations');
 
@@ -52,7 +53,8 @@ const getSummaryTagBlockStrings = (integrationSearchResults) =>
     flatMap(get('data.summary')),
     filter(and(identity, isString)),
     concat(''),
-    join('\n>:white_small_square: ')
+    join('\n>:white_small_square: '),
+    replace(/((http|ftp|https):\/\/)?([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])?/ig, '')
   )(integrationSearchResults);
 
 module.exports = buildSearchResultSummaryTagBlocks;

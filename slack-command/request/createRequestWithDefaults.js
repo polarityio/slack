@@ -85,12 +85,12 @@ const createRequestWithDefaults = (Logger = console) => {
       }
     };
 
-    Logger.info({
-      responseBody: JSON.stringify(body, null, 2),
-      MESSAGE: 'Request Ran, Checking Status...',
-      statusCode,
-      requestOptions: JSON.stringify(requestOptionsWithoutSensitiveData, null, 2)
-    });
+    // Logger.info({
+    //   responseBody: JSON.stringify(body, null, 2),
+    //   MESSAGE: 'Request Ran, Checking Status...',
+    //   statusCode,
+    //   requestOptions: JSON.stringify(requestOptionsWithoutSensitiveData, null, 2)
+    // });
 
     const roundedStatus = Math.round(statusCode / 100) * 100;
     const statusCodeNotSuccessful =
