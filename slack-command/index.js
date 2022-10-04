@@ -7,7 +7,7 @@ const handleSlackCommand = require('./commandHandler');
 const eventHandlers = require('./eventHandlers');
 const actionHandlers = require('./actionHandlers');
 const { parseErrorToReadableJSON } = require('../src/dataTransformations');
-
+const { inspect } = require('util');
 const PORT_NUMBER = require('../config/config').slackCommandServer.portNumber;
 
 const app = express();
@@ -15,6 +15,8 @@ app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 const slackCommandStartup = async (Logger, runningAsDeveloper) => {
+  const doExtraLogging =
+    runningAsDeveloper || get('logging.level', require('../config/config')) !== 'info';
   if (runningAsDeveloper) {
     const ngrok = require('ngrok');
 
@@ -33,23 +35,26 @@ const slackCommandStartup = async (Logger, runningAsDeveloper) => {
     Logger.info({
       MESSAGE: 'New ngrok URLs',
       url,
-      actionURL: `${url}/actions`,
-      cmdURL: `${url}/command`,
-      eventsURL: `${url}/events`
+      actionURL: `${url}/_slackcommand/actions`,
+      cmdURL: `${url}/_slackcommand/command`,
+      eventsURL: `${url}/_slackcommand/events`
     });
 
     await publishUrlToManifest(url);
   }
 
-  app.post('/command', async (req, res) => {
+  app.post('/_slackcommand/command', async (req, res) => {
     res.send();
 
     const slackUserId = get('body.user_id', req);
     const searchText = flow(get('body.text'), replace(/[\*\_\`]/g, ''))(req);
     const responseUrl = get('body.response_url', req);
-
+    if (doExtraLogging)
+      Logger.info({ MESSAGE: 'Slack Command Running', slackUserId, searchText, responseUrl });
     try {
       await handleSlackCommand(slackUserId, searchText, responseUrl);
+      if (doExtraLogging)
+        Logger.info({ MESSAGE: 'Slack Command has Run Successfully' });
     } catch (error) {
       const err = parseErrorToReadableJSON(error);
       Logger.error(
@@ -59,7 +64,7 @@ const slackCommandStartup = async (Logger, runningAsDeveloper) => {
     }
   });
 
-  app.post('/actions', async (req, res) => {
+  app.post('/_slackcommand/actions', async (req, res) => {
     const actionPayload = flow(get('body.payload'), JSON.parse)(req);
 
     const handleThisAction = async (...args) =>
@@ -68,9 +73,20 @@ const slackCommandStartup = async (Logger, runningAsDeveloper) => {
         actionHandlers
       )(...args);
 
+      if (doExtraLogging)
+        Logger.info({
+          MESSAGE: 'Slack Action Running',
+          actionPayload,
+          handleThisAction: inspect(handleThisAction)
+        });
     let handledActionResponseToSendToSlack;
     try {
       handledActionResponseToSendToSlack = await handleThisAction(actionPayload);
+      if (doExtraLogging)
+        Logger.info({
+          MESSAGE: 'Slack Action has Run Successfully',
+          handledActionResponseToSendToSlack
+        });
     } catch (error) {
       const err = parseErrorToReadableJSON(error);
       Logger.error(
@@ -87,13 +103,24 @@ const slackCommandStartup = async (Logger, runningAsDeveloper) => {
     }
   });
 
-  app.post('/events', async (req, res) => {
+  app.post('/_slackcommand/events', async (req, res) => {
     const handleThisEvent = async (...args) =>
       await getOr(stubFalse, get('body.event.type', req), eventHandlers)(...args);
 
+    if (doExtraLogging)
+      Logger.info({
+        MESSAGE: 'Slack Event Running',
+        eventType: get('body.event.type', req),
+        handleThisEvent: inspect(handleThisEvent)
+      });
     let handledEventResponseToSendToSlack;
     try {
       handledEventResponseToSendToSlack = await handleThisEvent(req);
+      if (doExtraLogging)
+        Logger.info({
+          MESSAGE: 'Slack Event has Run Successfully',
+          handledEventResponseToSendToSlack
+        });
     } catch (error) {
       const err = parseErrorToReadableJSON(error);
       Logger.error(
@@ -108,7 +135,7 @@ const slackCommandStartup = async (Logger, runningAsDeveloper) => {
     }
   });
 
-  app.listen(PORT_NUMBER);
+  app.listen(PORT_NUMBER, '127.0.0.1');
 
   Logger.info(
     `\n\n******* Slack Command Server Running on Port ${PORT_NUMBER} *******\n\n`

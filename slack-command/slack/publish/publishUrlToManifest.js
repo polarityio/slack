@@ -28,7 +28,7 @@ const publishUrlToManifest = async (url) =>
           slash_commands: [
             {
               command: '/polarity',
-              url: `${url}/command`,
+              url: `${url}/_slackcommand/command`,
               description:
                 'The Polarity command will return the results of a search to the Overlay',
               usage_hint: 'Polarity Search Here',
@@ -56,12 +56,12 @@ const publishUrlToManifest = async (url) =>
         },
         settings: {
           event_subscriptions: {
-            request_url: `${url}/events`,
+            request_url: `${url}/_slackcommand/events`,
             bot_events: ['app_home_opened']
           },
           interactivity: {
             is_enabled: true,
-            request_url: `${url}/actions`
+            request_url: `${url}/_slackcommand/actions`
           },
           org_deploy_enabled: false,
           socket_mode_enabled: false,

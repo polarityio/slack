@@ -82,9 +82,9 @@ const setEnvVarInFile = (key,value) => {
       "userPolarityCredentials": {
         "showPasswordField": false,
         "hidePolarityCredentials": false,
-        "polarityUsername": "<username>",
-        "loggedIntoPolarity": true,
-        "polarityPassword": "<base64EncodedPassword>"
+        "polarityUsername": "<username>", // username and password are removed from state when they enable the user to obtain a polarityCookie
+        "polarityPassword": "<base64EncodedPassword>",
+        "polarityCookie": "<polarity-cookie>" // removes username and password when this property is set in state
       },
       "integrationSubscriptions": [
         {

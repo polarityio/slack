@@ -1,4 +1,4 @@
-const { flatMap, size } = require('lodash/fp');
+const { flatMap, size, get } = require('lodash/fp');
 const { getStateValueByPath } = require('../../localStateManager');
 const publishBlocksToUserHomeScreen = require('./publishBlocksToUserHomeScreen');
 const {
@@ -17,7 +17,7 @@ const publishHomePageWithState = async (slackUserId) => {
       ...userPolarityCredentials,
       polarityPassword: decodeBase64(userPolarityCredentials.polarityPassword)
     }),
-    ...(size(integrationSubscriptions) && userPolarityCredentials.loggedIntoPolarity
+    ...(size(integrationSubscriptions) && get('polarityCookie', userPolarityCredentials)
       ? [
           {
             type: 'header',

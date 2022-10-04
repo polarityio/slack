@@ -9,7 +9,7 @@ const displayLoginInfoMessage = require('./displayLoginInfoMessage');
 
 const handleSlackCommand = async (slackUserId, searchText, responseUrl) => {
   const notLoggedIntoPolarity = !getStateValueByPath(
-    `${slackUserId}.slackAppHomeState.userPolarityCredentials.loggedIntoPolarity`
+    `${slackUserId}.slackAppHomeState.userPolarityCredentials.polarityCookie`
   );
   if (notLoggedIntoPolarity) return await displayLoginInfoMessage(responseUrl);
 
