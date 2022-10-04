@@ -54,7 +54,8 @@ const getConfigEnvironmentVariables = () => {
   //https://api.slack.com/authentication/config-tokens
   slackBotToken: environment.POLARITY_SLACK_APP_BOT_TOKEN,
   appToken: environment.POLARITY_SLACK_APP_TOKEN,
-  appRefreshToken: environment.POLARITY_SLACK_APP_REFRESH_TOKEN
+  appRefreshToken: environment.POLARITY_SLACK_APP_REFRESH_TOKEN,
+  slackSigningSecret: environment.POLARITY_SLACK_APP_SIGNING_SECRET,
 }};
 
 const configEnvVarMapping = {

@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const { getOr, get, stubFalse, flow, split, head, replace } = require('lodash/fp');
 
 const { publishUrlToManifest } = require('./slack');
+const authenticateSlack = require('./request/authenticateSlack');
 const handleSlackCommand = require('./commandHandler');
 const eventHandlers = require('./eventHandlers');
 const actionHandlers = require('./actionHandlers');
@@ -11,8 +12,8 @@ const { inspect } = require('util');
 const PORT_NUMBER = require('../config/config').slackCommandServer.portNumber;
 
 const app = express();
-app.use(bodyParser.json()); // support json encoded bodies
-app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+app.use(bodyParser.text({ type: 'application/*' })); // support json encoded bodies
+app.use(authenticateSlack);
 
 const slackCommandStartup = async (Logger, runningAsDeveloper) => {
   const doExtraLogging =
@@ -46,9 +47,13 @@ const slackCommandStartup = async (Logger, runningAsDeveloper) => {
   app.post('/_slackcommand/command', async (req, res) => {
     res.send();
 
-    const slackUserId = get('body.user_id', req);
-    const searchText = flow(get('body.text'), replace(/[\*\_\`]/g, ''))(req);
-    const responseUrl = get('body.response_url', req);
+    const requestBody = flow(get('body'), (body) =>
+      Object.fromEntries(new URLSearchParams(body))
+    )(req);
+
+    const slackUserId = get('user_id', requestBody);
+    const searchText = flow(get('text'), replace(/[\*\_\`]/g, ''))(requestBody);
+    const responseUrl = get('response_url', requestBody);
     if (doExtraLogging)
       Logger.info({ MESSAGE: 'Slack Command Running', slackUserId, searchText, responseUrl });
     try {
@@ -65,7 +70,11 @@ const slackCommandStartup = async (Logger, runningAsDeveloper) => {
   });
 
   app.post('/_slackcommand/actions', async (req, res) => {
-    const actionPayload = flow(get('body.payload'), JSON.parse)(req);
+    const requestBody = flow(get('body'), (body) =>
+      Object.fromEntries(new URLSearchParams(body))
+    )(req);;
+
+    const actionPayload = flow(get('payload'), JSON.parse)(requestBody);
 
     const handleThisAction = async (...args) =>
       await get(
@@ -104,18 +113,20 @@ const slackCommandStartup = async (Logger, runningAsDeveloper) => {
   });
 
   app.post('/_slackcommand/events', async (req, res) => {
+    const requestBody = flow(get('body'), JSON.parse)(req);
+
     const handleThisEvent = async (...args) =>
-      await getOr(stubFalse, get('body.event.type', req), eventHandlers)(...args);
+      await getOr(stubFalse, get('event.type', requestBody), eventHandlers)(...args);
 
     if (doExtraLogging)
       Logger.info({
         MESSAGE: 'Slack Event Running',
-        eventType: get('body.event.type', req),
+        eventType: get('event.type', requestBody),
         handleThisEvent: inspect(handleThisEvent)
       });
     let handledEventResponseToSendToSlack;
     try {
-      handledEventResponseToSendToSlack = await handleThisEvent(req);
+      handledEventResponseToSendToSlack = await handleThisEvent(requestBody);
       if (doExtraLogging)
         Logger.info({
           MESSAGE: 'Slack Event has Run Successfully',
@@ -124,13 +135,13 @@ const slackCommandStartup = async (Logger, runningAsDeveloper) => {
     } catch (error) {
       const err = parseErrorToReadableJSON(error);
       Logger.error(
-        { event: get('body.event', req), error, formattedError: err },
+        { event: get('event', requestBody), error, formattedError: err },
         'Slack Event Handling Failed'
       );
     } finally {
       res.send({
         ...handledEventResponseToSendToSlack,
-        challenge: get('body.challenge', req)
+        challenge: get('challenge', requestBody)
       });
     }
   });

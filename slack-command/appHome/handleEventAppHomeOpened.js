@@ -6,8 +6,8 @@ const { getStateValueByPath, setStateValueForPath } = require('../localStateMana
 const { addPolarityIntegrationsToState } = require('../polarity');
 const { and, or } = require('../../src/dataTransformations');
 
-const handleEventAppHomeOpened = async (slackRequest) => {
-  const slackUserId = get('body.event.user', slackRequest);
+const handleEventAppHomeOpened = async (slackRequestBody) => {
+  const slackUserId = get('event.user', slackRequestBody);
   const userPolarityCredentialsPath = `${slackUserId}.slackAppHomeState.userPolarityCredentials`;
   const userPolarityCredentialsState = getStateValueByPath(userPolarityCredentialsPath);
 

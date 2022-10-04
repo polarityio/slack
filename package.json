@@ -6,7 +6,7 @@
   "license": "MIT",
   "author": "Polarity",
   "scripts": {
-    "createEnvFile": "echo \"POLARITY_SLACK_APP_BOT_TOKEN=\\\"\\\"\nPOLARITY_SLACK_APP_TOKEN=\\\"\\\"\nPOLARITY_SLACK_APP_REFRESH_TOKEN=\\\"\\\"\" > ./slack-command/.env && vi ./slack-command/.env",
+    "createEnvFile": "echo \"POLARITY_SLACK_APP_BOT_TOKEN=\\\"\\\"\nPOLARITY_SLACK_APP_TOKEN=\\\"\\\"\nPOLARITY_SLACK_APP_REFRESH_TOKEN=\\\"\\\"\nPOLARITY_SLACK_APP_SIGNING_SECRET=\\\"\\\"\" > ./slack-command/.env && vi ./slack-command/.env",
     "updateNginx": "echo \"location /_slackcommand {\\\\n  proxy_set_header Host \\$host;\\\\n  proxy_set_header X-Real-IP \\$remote_addr;\\\\n  proxy_pass http://127.0.0.1:$(node -e \"console.log(require('./config/config.js').slackCommandServer.portNumber)\");\\\\n}\" > /app/nginx/slack-bot.conf && systemctl restart nginx",
     "updateAppManifest": "node -e \"require('./slack-command/slack/publish/publishConfigManifest.js')()\" > /dev/null",
     "startCommandServer": "mkdir -p ./logs && echo \"********  Slack Command Server is Running  ******** \n\" && nohup node -e \"require('./slack-command/index.js')(console)\" > ./logs/slack-command-server.log 2>&1 &",
@@ -22,7 +22,8 @@
     "lodash": "^4.17.21",
     "node-cache": "^5.1.2",
     "port-pid": "0.0.7",
-    "postman-request": "^2.88.1-postman.31"
+    "postman-request": "^2.88.1-postman.31",
+    "tsscmp": "^1.0.6"
   },
   "devDependencies": {
     "ngrok": "^4.3.1"
