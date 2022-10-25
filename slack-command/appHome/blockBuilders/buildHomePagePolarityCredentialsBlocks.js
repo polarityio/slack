@@ -40,11 +40,15 @@ const buildHomePagePolarityCredentialsBlocks = ({
     ? []
     : [
         { type: 'divider' },
-        ...displayCredentialsForm(polarityCookie, polarityUsername, polarityPassword,showPasswordField),
+        ...displayCredentialsForm(
+          polarityCookie,
+          polarityUsername,
+          polarityPassword,
+          showPasswordField
+        ),
         ...displayLoginStatus(polarityUsername, polarityPassword, polarityCookie)
       ])
 ];
-
 
 const displayLoginStatus = (polarityUsername, polarityPassword, polarityCookie) =>
   !(polarityUsername && polarityPassword) && !polarityCookie
@@ -117,7 +121,7 @@ const displayCredentialsForm = (
           }
         },
 
-        ...displayPasswordField(showPasswordField,polarityPassword),
+        ...displayPasswordField(showPasswordField, polarityPassword),
         { type: 'divider' }
       ]
     : [
@@ -207,5 +211,5 @@ const displayPasswordField = (showPasswordField, polarityPassword) =>
           }
         }
       ];
-      
+
 module.exports = buildHomePagePolarityCredentialsBlocks;

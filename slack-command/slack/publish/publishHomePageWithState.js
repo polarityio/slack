@@ -5,17 +5,15 @@ const {
   buildHomePagePolarityCredentialsBlocks,
   buildHomePageIntegrationBlocks
 } = require('../../appHome/blockBuilders');
-const { decodeBase64 } = require('../../../src/dataTransformations');
 
-const publishHomePageWithState = async (slackUserId) => {
-  const { integrationSubscriptions, userPolarityCredentials } = getStateValueByPath(
-    `${slackUserId}.slackAppHomeState`
-  ) || {};
-  
+const publishHomePageWithState = async (slackUserId, polarityPassword = '') => {
+  const { integrationSubscriptions, userPolarityCredentials } =
+    getStateValueByPath(`${slackUserId}.slackAppHomeState`) || {};
+
   const appHomePageBlocks = [
     ...buildHomePagePolarityCredentialsBlocks({
       ...userPolarityCredentials,
-      polarityPassword: decodeBase64(userPolarityCredentials.polarityPassword)
+      polarityPassword
     }),
     ...(size(integrationSubscriptions) && get('polarityCookie', userPolarityCredentials)
       ? [

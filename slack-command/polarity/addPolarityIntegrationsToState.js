@@ -13,10 +13,13 @@ const { getStateValueByPath, setStateValueForPath } = require('../localStateMana
 
 const { requestWithDefaults } = require('../request');
 
-const addPolarityIntegrationsToState = async (slackUserId) => {
+const addPolarityIntegrationsToState = async (slackUserId, polarityPassword = '') => {
   const intSubStatePath = `${slackUserId}.slackAppHomeState.integrationSubscriptions`;
   const integrationSubscriptionsState = getStateValueByPath(intSubStatePath);
-  const currentPolarityIntegrationsState = await getPolarityIntegrations(slackUserId);
+  const currentPolarityIntegrationsState = await getPolarityIntegrations(
+    slackUserId,
+    polarityPassword
+  );
 
   const noIntegrationStateFound = isEmpty(integrationSubscriptionsState);
 
@@ -38,7 +41,7 @@ const addPolarityIntegrationsToState = async (slackUserId) => {
   setStateValueForPath(intSubStatePath, newIntegrationSubscriptionsState);
 };
 
-const getPolarityIntegrations = async (slackUserId) =>
+const getPolarityIntegrations = async (slackUserId, polarityPassword) =>
   flow(
     get('body.data'),
     filter(
@@ -57,7 +60,8 @@ const getPolarityIntegrations = async (slackUserId) =>
       method: 'GET',
       site: 'polarity',
       route: 'v2/integrations',
-      slackUserId
+      slackUserId,
+      polarityPassword
     })
   );
   

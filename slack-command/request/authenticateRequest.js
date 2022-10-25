@@ -1,6 +1,6 @@
 const { get, getOr, includes, identity, stubFalse, eq, flow, negate } = require('lodash/fp');
 
-const { getSetCookies, or, decodeBase64 } = require('../../src/dataTransformations');
+const { getSetCookies, or } = require('../../src/dataTransformations');
 const { getStateValueByPath, setStateValueForPath } = require('../localStateManager');
 const handleRequestErrorsForServices = require('./handleRequestErrorsForServices');
 
@@ -13,7 +13,7 @@ const authenticateRequest =
     );
 
 const authenticateForPolarityRequest = async (
-  { route, slackUserId, ...requestOptions },
+  { route, slackUserId, polarityPassword, ...requestOptions },
   requestWithDefaultsBuilder
 ) => {
   const requestWithDefaults = requestWithDefaultsBuilder(
@@ -25,11 +25,10 @@ const authenticateForPolarityRequest = async (
   const polarityUrl = getStateValueByPath('config.polarityUrl');
 
   const polarityCredentialsPath = `${slackUserId}.slackAppHomeState.userPolarityCredentials`;
-  let { polarityCookie, polarityUsername, polarityPassword } =
+  let { polarityCookie, polarityUsername } =
     getStateValueByPath(polarityCredentialsPath) || {};
 
-  let credentialsAreIncorrect;
-  if (!polarityCookie) {
+  if (!polarityCookie && polarityUsername && polarityPassword) {
     const authenticationResponse = await requestWithDefaults({
       method: 'POST',
       site: 'polarity',
@@ -37,11 +36,11 @@ const authenticateForPolarityRequest = async (
       headers: { 'Content-Type': 'application/json' },
       body: {
         identification: polarityUsername,
-        password: decodeBase64(polarityPassword)
+        password: polarityPassword
       }
     });
 
-    credentialsAreIncorrect = flow(
+    const credentialsAreIncorrect = flow(
       get('statusCode'),
       or(eq(401), eq(422), negate(identity))
     )(authenticationResponse);
@@ -50,7 +49,6 @@ const authenticateForPolarityRequest = async (
     if (!credentialsAreIncorrect && polarityCookie) {
       setStateValueForPath(`${polarityCredentialsPath}.polarityCookie`, polarityCookie);
       setStateValueForPath(`${polarityCredentialsPath}.polarityUsername`, '');
-      setStateValueForPath(`${polarityCredentialsPath}.polarityPassword`, '');
     } else {
       setStateValueForPath(`${polarityCredentialsPath}.polarityCookie`, '');
     }
