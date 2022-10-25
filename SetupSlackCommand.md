@@ -16,7 +16,7 @@
    
 3. In the terminal run `npm run updateNginx`
 
-> ***NOTE***: _Steps 3-5_ can be skipped if you have your  `POLARITY_SLACK_APP_TOKEN` & `POLARITY_SLACK_APP_REFRESH_TOKEN` `.env` variables set, and instead of _Steps 4-6_  you can just run `npm run updateAppManifest` in the terminal
+> ***NOTE***: _Steps 4-6_ can be skipped if you have your  `POLARITY_SLACK_APP_TOKEN` & `POLARITY_SLACK_APP_REFRESH_TOKEN` `.env` variables set, and instead of _Steps 4-6_  you can just run `npm run updateAppManifest` in the terminal
 
 4. Go to https://api.slack.com/apps/ and select the `Polarity` App
 
