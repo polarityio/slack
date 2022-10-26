@@ -1,6 +1,6 @@
 const { get, getOr, includes, identity, stubFalse, eq, flow, negate } = require('lodash/fp');
 
-const { getSetCookies, or } = require('../../src/dataTransformations');
+const { getSetCookies, or, decrypt, encrypt } = require('../../src/dataTransformations');
 const { getStateValueByPath, setStateValueForPath } = require('../localStateManager');
 const handleRequestErrorsForServices = require('./handleRequestErrorsForServices');
 
@@ -47,6 +47,10 @@ const authenticateForPolarityRequest = async (
 
     polarityCookie = getSetCookies(get('headers', authenticationResponse));
     if (!credentialsAreIncorrect && polarityCookie) {
+      polarityCookie = encrypt(
+        polarityCookie,
+        getStateValueByPath('config.slackSigningSecret')
+      );
       setStateValueForPath(`${polarityCredentialsPath}.polarityCookie`, polarityCookie);
       setStateValueForPath(`${polarityCredentialsPath}.polarityUsername`, '');
     } else {
@@ -59,7 +63,7 @@ const authenticateForPolarityRequest = async (
     url: `${polarityUrl}/${route}`,
     headers: {
       ...requestOptions.headers,
-      Cookie: polarityCookie
+      Cookie: decrypt(polarityCookie, getStateValueByPath('config.slackSigningSecret'))
     }
   };
 };

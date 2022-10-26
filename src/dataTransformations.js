@@ -19,8 +19,10 @@ const {
   identity,
   join,
   split,
-  getOr
+  getOr,
+  slice
 } = require('lodash/fp');
+const crypto = require('crypto');
 
 const { IGNORED_IPS } = require('./constants');
 
@@ -178,6 +180,28 @@ const encodeBase64 = (str) => str && Buffer.from(str).toString('base64');
 
 const decodeBase64 = (str) => str && Buffer.from(str, 'base64').toString('ascii');
 
+// https://github.com/breachintelligence/polarity-server/blob/main/lib/utils/encryption.js
+const encrypt = (plainText, secretKey) => {
+  const ivAsBuffer = crypto.randomBytes(16);
+  const secretKeyBuffer = Buffer.from(secretKey.slice(0, 32), 'utf8');
+  const cipher = crypto.createCipheriv('aes-256-ctr', secretKeyBuffer, ivAsBuffer);
+  const cipherTextBuffer = Buffer.concat([cipher.update(plainText), cipher.final()]);
+  return ivAsBuffer.toString('hex') + ':' + cipherTextBuffer.toString('hex');
+};
+
+const decrypt = (cipherText, secretKey) => {
+  const cipherTextParts = cipherText.split(':');
+  const decipher = crypto.createDecipheriv(
+    'aes-256-ctr',
+    Buffer.from(secretKey.slice(0, 32), 'utf8'),
+    Buffer.from(cipherTextParts[0], 'hex')
+  );
+  return Buffer.concat([
+    decipher.update(Buffer.from(cipherTextParts[1], 'hex')),
+    decipher.final()
+  ]).toString('utf8');
+};
+
 module.exports = {
   getKeys,
   groupEntities,
@@ -196,5 +220,7 @@ module.exports = {
   sleep,
   getSetCookies,
   encodeBase64,
-  decodeBase64
+  decodeBase64,
+  encrypt,
+  decrypt
 };

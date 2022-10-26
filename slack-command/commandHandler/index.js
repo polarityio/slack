@@ -13,9 +13,10 @@ const handleSlackCommand = async (slackUserId, searchText, responseUrl) => {
   );
   if (notLoggedIntoPolarity) return await displayLoginInfoMessage(responseUrl);
 
-  const entities = await parseEntities(slackUserId, searchText);
-
-  const { profilePicture, slackUserName } = await getSlackUser(slackUserId);
+  const [{ profilePicture, slackUserName }, entities] = await Promise.all([
+    getSlackUser(slackUserId),
+    parseEntities(slackUserId, searchText)
+  ]);
 
   const integrationsSearchResultsSummaryTags =
     await getIntegrationSearchResultsSummaryTagsBlocks(slackUserId, searchText, entities);

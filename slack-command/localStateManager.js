@@ -50,18 +50,20 @@ const _getLocalState = (path = LOCAL_STATE_FILEPATH) =>
 const getConfigEnvironmentVariables = () => {
   const environment = require('dotenv').config({ path: ENV_VAR_FILEPATH }).parsed;
 
-  return{
-  //https://api.slack.com/authentication/config-tokens
-  slackBotToken: environment.POLARITY_SLACK_APP_BOT_TOKEN,
-  appToken: environment.POLARITY_SLACK_APP_TOKEN,
-  appRefreshToken: environment.POLARITY_SLACK_APP_REFRESH_TOKEN,
-  slackSigningSecret: environment.POLARITY_SLACK_APP_SIGNING_SECRET,
-}};
+  return {
+    //https://api.slack.com/authentication/config-tokens
+    slackBotToken: environment.POLARITY_SLACK_APP_BOT_TOKEN,
+    appToken: environment.POLARITY_SLACK_APP_TOKEN,
+    appRefreshToken: environment.POLARITY_SLACK_APP_REFRESH_TOKEN,
+    slackSigningSecret: environment.POLARITY_SLACK_APP_SIGNING_SECRET
+  };
+};
 
 const configEnvVarMapping = {
-  slackBotToken: "POLARITY_SLACK_APP_BOT_TOKEN",
-  appToken: "POLARITY_SLACK_APP_TOKEN",
-  appRefreshToken: "POLARITY_SLACK_APP_REFRESH_TOKEN"
+  slackBotToken: 'POLARITY_SLACK_APP_BOT_TOKEN',
+  appToken: 'POLARITY_SLACK_APP_TOKEN',
+  appRefreshToken: 'POLARITY_SLACK_APP_REFRESH_TOKEN',
+  slackSigningSecret: "POLARITY_SLACK_APP_SIGNING_SECRET"
 };
 
 const setEnvVarInFile = (key,value) => {

@@ -14,7 +14,7 @@ const handleEventAppHomeOpened = async (slackRequestBody) => {
   setStateValueForPath(userPolarityCredentialsPath, {
     ...userPolarityCredentialsState,
     showPasswordField: false,
-    hidePolarityCredentials: getOr(
+    hidePolarityCredentials: !!getOr(
       false,
       'polarityCookie',
       userPolarityCredentialsState
