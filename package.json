@@ -8,6 +8,6 @@
   "dependencies": {
     "lodash": "^4.17.21",
     "node-cache": "^5.1.2",
-    "postman-request": "*"
+    "postman-request": "^2.88.1-postman.31"
   }
 }
