@@ -1,13 +1,13 @@
 {
   "main": "./integration.js",
   "name": "slack",
-  "version": "3.0.1-beta",
+  "version": "3.0.2-beta",
   "private": true,
   "license": "MIT",
   "author": "Polarity",
   "dependencies": {
     "lodash": "^4.17.21",
     "node-cache": "^5.1.2",
-    "postman-request": "*"
+    "postman-request": "^2.88.1-postman.31"
   }
 }
