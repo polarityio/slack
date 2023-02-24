@@ -9,7 +9,7 @@ const getIntegrationsSearchResults = async (
   await Promise.all(
     flow(
       getIntegrationIdsToSearch,
-      map(async (intId) => await searchIntegrationById(slackUserId, intId, entities))
+      map(async (intId) => await searchIntegrationById(slackUserId, intId, entities)),
     )(integrationSubscriptions)
   );
 

@@ -1,6 +1,6 @@
 const { getStateValueByPath } = require('../localStateManager');
+const { buildSearchResultSummaryTagBlocks } = require('./blockBuilders');
 const getIntegrationsSearchResults = require('./getIntegrationsSearchResults');
-const buildSearchResultSummaryTagBlocks = require('./buildSearchResultSummaryTagBlocks');
 
 const getIntegrationSearchResultsSummaryTagsBlocks = async (
   slackUserId,

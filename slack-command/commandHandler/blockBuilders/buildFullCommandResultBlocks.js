@@ -25,7 +25,7 @@ const buildFullCommandResultBlocks = (
       {
         type: 'mrkdwn',
         text: `> _<${
-          require('../../config/config.js').slackCommandServer.polarityUrl
+          require('../../../config/config.js').slackCommandServer.polarityUrl
         }/search?q=${searchText}|Search In Polarity>_`
       }
     ]

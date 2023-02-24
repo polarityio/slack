@@ -6,6 +6,7 @@ const { eq, get, flow, identity } = require('lodash/fp');
 const authenticateRequest = require('./authenticateRequest');
 const { ERROR_MESSAGES } = require('../../src/constants');
 const handleRequestErrorsForServices = require('./handleRequestErrorsForServices');
+const handleRequestSuccessForServices = require('./handleRequestSuccessForServices');
 
 const SUCCESSFUL_ROUNDED_REQUEST_STATUS_CODES = [200];
 
@@ -69,14 +70,14 @@ const createRequestWithDefaults = (Logger = console) => {
       return postRequestFunctionResults;
     };
   };
-  
+
   const checkForStatusError = ({ statusCode, body }, requestOptions) => {
     const requestOptionsWithoutSensitiveData = {
       ...requestOptions,
       headers: {
         ...requestOptions.headers,
         Cookie: '*********',
-        Authorization: 'Bearer ************',
+        Authorization: 'Bearer ************'
       },
       body: {
         ...requestOptions.body,
@@ -100,10 +101,7 @@ const createRequestWithDefaults = (Logger = console) => {
     if (statusCodeNotSuccessful || requestIsNotOk) {
       const requestError = Error('Request Error');
       requestError.status = statusCodeNotSuccessful ? statusCode : body.error;
-      requestError.detail = get(
-        get('error', body),
-        ERROR_MESSAGES
-      );
+      requestError.detail = get(get('error', body), ERROR_MESSAGES);
       requestError.description = JSON.stringify(body);
       requestError.requestOptions = JSON.stringify(requestOptionsWithoutSensitiveData);
       throw requestError;
@@ -112,13 +110,11 @@ const createRequestWithDefaults = (Logger = console) => {
 
   const requestDefaultsWithInterceptors = requestWithDefaultsBuilder(
     authenticateRequest(requestWithDefaultsBuilder),
-    identity,
+    handleRequestSuccessForServices(requestWithDefaultsBuilder),
     handleRequestErrorsForServices(requestWithDefaultsBuilder)
   );
 
   return requestDefaultsWithInterceptors;
 };
 
-
-
-module.exports = createRequestWithDefaults ;
+module.exports = createRequestWithDefaults;

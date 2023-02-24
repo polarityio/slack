@@ -80,14 +80,13 @@ const setEnvVarInFile = (key,value) => {
 
 /** Current State Schema
 {
+  "serviceAccountCredentials": {
+    "hidePolarityCredentials": false,
+    "polarityUsername": "<username>", // username and password are removed from state when they enable the user to obtain a polarityCookie
+    "polarityCookie": "<polarity-cookie>" // removes username and password when this property is set in state
+  },
   "<slackUserId>": {
     "slackAppHomeState": {
-      "userPolarityCredentials": {
-        "showPasswordField": false,
-        "hidePolarityCredentials": false,
-        "polarityUsername": "<username>", // username and password are removed from state when they enable the user to obtain a polarityCookie
-        "polarityCookie": "<polarity-cookie>" // removes username and password when this property is set in state
-      },
       "integrationSubscriptions": [
         {
           "integration": {

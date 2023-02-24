@@ -23,6 +23,7 @@ To learn more about Slack, visit the [official website](https://slack.com/).
 - To Enable to `/polarity` Slack Command follow the instructions found in the [**Polarity Slack Command Setup Guide**](./SetupSlackCommand.md).
 - > ***NOTE:*** The Slack Command does not support SAML authentication to the Polarity Server in it's current version.  If you would like it to in the future please reach out to `support@polarity.io` about supporting SAML authentication on for the `/polarity` Slack Command.
 
+- > ***NOTE:*** When adding new integrations to you Polarity Server or restarting your Polarity Server, the Authentication set via the Slack Polarity App will need to be re-entered.  This is to be expected with the current version of the app.
 - > ***NOTE:*** The Slack Command will return only some, and not necessarily all, of the Overlay Summary Tags for the Integrations you are Subscribed to in the Polarity Slack App Home (_See [**Polarity Slack Command Setup Guide**](./SetupSlackCommand.md) Step 8 for reference_).  This is to be expected with the current version of the app.  If you find an Integration isn't returning Summary Tags and you would like it to in the future, please reach out to `support@polarity.io` about which Integration you would like to be supported by the `/polarity` Slack Command.
 
 

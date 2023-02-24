@@ -1,6 +1,4 @@
 const { get, includes } = require('lodash/fp');
-const { encodeBase64 } = require('../../../src/dataTransformations');
-const { addPolarityIntegrationsToState } = require('../../polarity');
 const { setStateValueForPath } = require('../../localStateManager');
 const { publishHomePageWithState } = require('../../slack');
 

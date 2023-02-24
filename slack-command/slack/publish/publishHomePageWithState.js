@@ -1,36 +1,38 @@
-const { flatMap, size, get } = require('lodash/fp');
+const { size } = require('lodash/fp');
 const { getStateValueByPath } = require('../../localStateManager');
 const publishBlocksToUserHomeScreen = require('./publishBlocksToUserHomeScreen');
 const {
-  buildHomePagePolarityCredentialsBlocks,
-  buildHomePageIntegrationBlocks
+  assembleAppHomePageBlocks,
+  assembleMinimizedAppHomePageBlocks
 } = require('../../appHome/blockBuilders');
+const checkIfUserIsAdmin = require('../checkIfUserIsAdmin');
 
 const publishHomePageWithState = async (slackUserId, polarityPassword = '') => {
-  const { integrationSubscriptions, userPolarityCredentials } =
+  const userIsAdmin = await checkIfUserIsAdmin(slackUserId);
+
+  const { integrationSubscriptions } =
     getStateValueByPath(`${slackUserId}.slackAppHomeState`) || {};
 
-  const appHomePageBlocks = [
-    ...buildHomePagePolarityCredentialsBlocks({
-      ...userPolarityCredentials,
-      polarityPassword
-    }),
-    ...(size(integrationSubscriptions) && get('polarityCookie', userPolarityCredentials)
-      ? [
-          {
-            type: 'header',
-            text: {
-              type: 'plain_text',
-              text: 'Integrations:',
-              emoji: true
-            }
-          },
-          ...flatMap(buildHomePageIntegrationBlocks, integrationSubscriptions)
-        ]
-      : [])
-  ];
+  const serviceAccountCredentials = getStateValueByPath('serviceAccountCredentials');
+
+  let appHomePageBlocks = assembleAppHomePageBlocks(
+    userIsAdmin,
+    serviceAccountCredentials,
+    polarityPassword,
+    integrationSubscriptions
+  );
+
+  if (size(appHomePageBlocks) > 100) {
+    appHomePageBlocks = assembleMinimizedAppHomePageBlocks(
+      userIsAdmin,
+      serviceAccountCredentials,
+      polarityPassword,
+      integrationSubscriptions
+    );
+  }
 
   await publishBlocksToUserHomeScreen(slackUserId, appHomePageBlocks);
 };
+
 
 module.exports = publishHomePageWithState;

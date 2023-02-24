@@ -4,7 +4,6 @@ const { getStateValueByPath, setStateValueForPath } = require('../localStateMana
 
 const { parseErrorToReadableJSON, or } = require('../../src/dataTransformations');
 
-
 const handleRequestErrorsForServices =
   (requestWithDefaultsBuilder) => async (error, requestOptions) =>
     await get(requestOptions.site, authenticationProcessBySite)(
@@ -18,8 +17,8 @@ const checkForSlackExpiredTokenAndRetry = async (
   requestOptions,
   requestWithDefaultsBuilder
 ) => {
-  const err = parseErrorToReadableJSON(error)
-  
+  const err = parseErrorToReadableJSON(error);
+
   const isTokenExpired = flow(
     get('description'),
     JSON.parse,
@@ -31,12 +30,13 @@ const checkForSlackExpiredTokenAndRetry = async (
     return await refreshToken(requestOptions, requestWithDefaultsBuilder);
 
   throw error;
-}
+};
 
 const refreshToken = async (requestOptions, requestWithDefaultsBuilder) => {
   let requestWithDefaults = requestWithDefaultsBuilder();
-  
-  const {token, refresh_token} = getOr({},
+
+  const { token, refresh_token } = getOr(
+    {},
     'body',
     await requestWithDefaults({
       method: 'POST',
@@ -56,24 +56,21 @@ const refreshToken = async (requestOptions, requestWithDefaultsBuilder) => {
   requestWithDefaults = requestWithDefaultsBuilder(
     authenticateRequest(requestWithDefaultsBuilder)
   );
-  
+
   return await requestWithDefaults(requestOptions);
 };
 
-
-const ignoreErrorIfAuthenticationError = async (
-  error,
-  requestOptions
-) => {
+const eraseCookieIfAuthenticationError = async (error, requestOptions) => {
   const err = parseErrorToReadableJSON(error);
 
   const isAuthenticationError = flow(get('status'), or(eq(401), eq(422)))(err);
-  if (!isAuthenticationError) throw error;
+  if (isAuthenticationError)
+    setStateValueForPath('serviceAccountCredentials.polarityCookie', '');
+  else throw error;
 };
 
-
 const authenticationProcessBySite = {
-  polarity: ignoreErrorIfAuthenticationError,
+  polarity: eraseCookieIfAuthenticationError,
   slack: checkForSlackExpiredTokenAndRetry
 };
 

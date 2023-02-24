@@ -6,7 +6,7 @@ const logout = async (actionPayload) => {
   const slackUserId = get('user.id', actionPayload);
   
   setStateValueForPath(
-    `${slackUserId}.slackAppHomeState.userPolarityCredentials.polarityCookie`,
+    'serviceAccountCredentials.polarityCookie',
     ''
   );
 

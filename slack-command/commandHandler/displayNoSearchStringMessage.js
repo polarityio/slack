@@ -1,6 +1,6 @@
 const { requestWithDefaults } = require('../request');
 
-const displayLoginInfoMessage = (responseUrl) =>
+const displayNoSearchStringMessage = (responseUrl) =>
   requestWithDefaults({
     method: 'POST',
     site: 'slack',
@@ -16,9 +16,8 @@ const displayLoginInfoMessage = (responseUrl) =>
             {
               type: 'mrkdwn',
               text:
-                '\n:exclamation: Must log in to Polarity to search with `/polarity`.\n' +
-                '>   _Credentials can be entered via the Polarity App in Slack by a Slack Admin._\n' +
-                '>   _This may happen when restarting your Polarity Server._'
+                '\n You used the `/polarity` command :confetti_ball:, but it was used without a search string. :thinking_face:\n' +
+                '> _Did you mean to add a search string :shrug: like this:_ `/polarity <polarity-search-string>`:question:'
             }
           ]
         }
@@ -26,4 +25,4 @@ const displayLoginInfoMessage = (responseUrl) =>
     }
   });
 
-module.exports = displayLoginInfoMessage;
+module.exports = displayNoSearchStringMessage;

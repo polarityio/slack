@@ -1,4 +1,13 @@
-const { get, getOr, includes, identity, stubFalse, eq, flow, negate } = require('lodash/fp');
+const {
+  get,
+  getOr,
+  includes,
+  identity,
+  stubFalse,
+  eq,
+  flow,
+  negate
+} = require('lodash/fp');
 
 const { getSetCookies, or, decrypt, encrypt } = require('../../src/dataTransformations');
 const { getStateValueByPath, setStateValueForPath } = require('../localStateManager');
@@ -7,10 +16,11 @@ const handleRequestErrorsForServices = require('./handleRequestErrorsForServices
 const authenticateRequest =
   (requestWithDefaultsBuilder) =>
   async ({ site, ...requestOptions }) =>
-    await getOr(identity,site, authenticationProcessBySite)(
-      requestOptions,
-      requestWithDefaultsBuilder
-    );
+    await getOr(
+      identity,
+      site,
+      authenticationProcessBySite
+    )(requestOptions, requestWithDefaultsBuilder);
 
 const authenticateForPolarityRequest = async (
   { route, slackUserId, polarityPassword, ...requestOptions },
@@ -24,7 +34,7 @@ const authenticateForPolarityRequest = async (
 
   const polarityUrl = getStateValueByPath('config.polarityUrl');
 
-  const polarityCredentialsPath = `${slackUserId}.slackAppHomeState.userPolarityCredentials`;
+  const polarityCredentialsPath = `serviceAccountCredentials`;
   let { polarityCookie, polarityUsername } =
     getStateValueByPath(polarityCredentialsPath) || {};
 
@@ -57,7 +67,7 @@ const authenticateForPolarityRequest = async (
       setStateValueForPath(`${polarityCredentialsPath}.polarityCookie`, '');
     }
   }
-  
+
   return {
     ...requestOptions,
     url: `${polarityUrl}/${route}`,

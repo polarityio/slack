@@ -6,10 +6,8 @@ const toggleShowPolarityCredentials = async (actionPayload) => {
   const slackUserId = get('user.id', actionPayload);
 
   setStateValueForPath(
-    `${slackUserId}.slackAppHomeState.userPolarityCredentials.hidePolarityCredentials`,
-    !getStateValueByPath(
-      `${slackUserId}.slackAppHomeState.userPolarityCredentials.hidePolarityCredentials`
-    )
+    'serviceAccountCredentials.hidePolarityCredentials',
+    !getStateValueByPath('serviceAccountCredentials.hidePolarityCredentials')
   );
 
   await publishHomePageWithState(slackUserId);

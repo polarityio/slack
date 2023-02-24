@@ -8,27 +8,42 @@ const { and, or } = require('../../src/dataTransformations');
 
 const handleEventAppHomeOpened = async (slackRequestBody) => {
   const slackUserId = get('event.user', slackRequestBody);
-  const userPolarityCredentialsPath = `${slackUserId}.slackAppHomeState.userPolarityCredentials`;
-  const userPolarityCredentialsState = getStateValueByPath(userPolarityCredentialsPath);
 
-  setStateValueForPath(userPolarityCredentialsPath, {
-    ...userPolarityCredentialsState,
-    showPasswordField: false,
+  const polarityServiceAccountCredentials = getStateValueByPath(
+    'serviceAccountCredentials'
+  );
+
+  setHidePolarityCredentials(polarityServiceAccountCredentials);
+
+  await addPolarityIntegrationsToStateIfLoggedIn(
+    slackUserId,
+    polarityServiceAccountCredentials
+  );
+
+  await publishHomePageWithState(slackUserId);
+};
+
+const setHidePolarityCredentials = (polarityServiceAccountCredentials) =>
+  setStateValueForPath('serviceAccountCredentials', {
+    ...polarityServiceAccountCredentials,
     hidePolarityCredentials: !!getOr(
       false,
       'polarityCookie',
-      userPolarityCredentialsState
+      polarityServiceAccountCredentials
     )
   });
 
-  const credentialsAreEnteredInHomePageYet = or(
+const addPolarityIntegrationsToStateIfLoggedIn = async (
+  slackUserId,
+  polarityServiceAccountCredentials
+) => {
+  const credentialsHaveBeenEnteredInHomePage = or(
     and(has('polarityUsername'), has('polarityPassword')),
     has('polarityCookie')
-  )(userPolarityCredentialsState);
-  if (credentialsAreEnteredInHomePageYet)
-    await addPolarityIntegrationsToState(slackUserId);
+  )(polarityServiceAccountCredentials);
 
-  await publishHomePageWithState(slackUserId);
+  if (credentialsHaveBeenEnteredInHomePage)
+    await addPolarityIntegrationsToState(slackUserId);
 };
 
 module.exports = handleEventAppHomeOpened;

@@ -2,7 +2,6 @@ const { get } = require('lodash/fp');
 const { requestWithDefaults } = require('../request');
 
 const getSlackUser = async (slackUserId) => {
-  // TODO I can use state to only do this once per user
   const slackUser = get(
     'body.profile',
     await requestWithDefaults({

@@ -1,18 +1,13 @@
-const { replace } = require('lodash/fp');
-
 const buildHomePagePolarityCredentialsBlocks = ({
   hidePolarityCredentials,
-  polarityCookie,
-  polarityUsername,
-  polarityPassword,
-  showPasswordField
+  ...remainingCredentials
 } = {}) => [
   {
     type: 'section',
     block_id: 'appHome.credentials.showHideOverflowDropdown',
     text: {
       type: 'mrkdwn',
-      text: '*_Polarity Credentials:_*'
+      text: '*_Polarity Service Account Credentials:_*'
     },
     accessory: {
       type: 'overflow',
@@ -40,17 +35,12 @@ const buildHomePagePolarityCredentialsBlocks = ({
     ? []
     : [
         { type: 'divider' },
-        ...displayCredentialsForm(
-          polarityCookie,
-          polarityUsername,
-          polarityPassword,
-          showPasswordField
-        ),
-        ...displayLoginStatus(polarityUsername, polarityPassword, polarityCookie)
+        ...displayCredentialsForm(remainingCredentials),
+        ...displayLoginStatus(remainingCredentials)
       ])
 ];
 
-const displayLoginStatus = (polarityUsername, polarityPassword, polarityCookie) =>
+const displayLoginStatus = ({ polarityUsername, polarityPassword, polarityCookie }) =>
   !(polarityUsername && polarityPassword) && !polarityCookie
     ? [
         {
@@ -58,7 +48,7 @@ const displayLoginStatus = (polarityUsername, polarityPassword, polarityCookie) 
           elements: [
             {
               type: 'mrkdwn',
-              text: ":exclamation: Once you enter your Polarity Username & Password, you'll be able to search your available Polarity Integrations in Slack using `/polarity`"
+              text: ':exclamation: Once you enter the Polarity Service Account Username & Password, users will be able to search available Polarity Integrations in Slack using `/polarity`'
             }
           ]
         }
@@ -89,12 +79,7 @@ const displayLoginStatus = (polarityUsername, polarityPassword, polarityCookie) 
             ])
       ];
 
-const displayCredentialsForm = (
-  polarityCookie,
-  polarityUsername,
-  polarityPassword,
-  showPasswordField
-) =>
+const displayCredentialsForm = ({ polarityCookie, polarityUsername, polarityPassword }) =>
   !polarityCookie
     ? [
         {
@@ -121,7 +106,7 @@ const displayCredentialsForm = (
           }
         },
 
-        ...displayPasswordField(showPasswordField, polarityPassword),
+        ...displayPasswordField(polarityPassword),
         { type: 'divider' }
       ]
     : [
@@ -141,75 +126,30 @@ const displayCredentialsForm = (
         }
       ];
 
-const displayPasswordField = (showPasswordField, polarityPassword) =>
-  showPasswordField
-    ? [
-        {
-          dispatch_action: true,
-          block_id: 'appHome.credentials.passwordInput',
-          type: 'input',
-          element: {
-            action_id: 'changePolarityPassword',
-            type: 'plain_text_input',
-            dispatch_action_config: {
-              trigger_actions_on: ['on_character_entered']
-            },
-            placeholder: {
-              type: 'plain_text',
-              text: 'Add Password',
-              emoji: true
-            },
-            initial_value: polarityPassword || ''
-          },
-          label: {
-            type: 'plain_text',
-            text: `:lock: Password${polarityPassword ? '' : ' *'}`,
-            emoji: true
-          }
-        },
-        {
-          type: 'actions',
-          block_id: 'appHome.credentials.toggleShowPasswordButton',
-          elements: [
-            {
-              type: 'button',
-              text: {
-                type: 'plain_text',
-                text: ':see_no_evil:',
-                emoji: true
-              },
-              action_id: 'hidePasswordInputField'
-            }
-          ]
-        }
-      ]
-    : [
-        {
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: `:lock: *Password*${polarityPassword ? '' : ' *'}`
-          }
-        },
-        {
-          type: 'section',
-          block_id: 'appHome.credentials.toggleShowPasswordButton',
-          text: {
-            type: 'mrkdwn',
-            text: `> ${
-              polarityPassword ? replace(/./g, '*', polarityPassword) : '_Empty_ '
-            }`
-          },
-          accessory: {
-            type: 'button',
-            text: {
-              type: 'plain_text',
-              text: ':lower_left_fountain_pen:',
-              emoji: true
-            },
-            action_id: 'showPasswordInputField'
-          }
-        }
-      ];
+const displayPasswordField = (polarityPassword) => [
+  {
+    dispatch_action: true,
+    block_id: 'appHome.credentials.passwordInput',
+    type: 'input',
+    element: {
+      action_id: 'changePolarityPassword',
+      type: 'plain_text_input',
+      dispatch_action_config: {
+        trigger_actions_on: ['on_character_entered']
+      },
+      placeholder: {
+        type: 'plain_text',
+        text: 'Add Password',
+        emoji: true
+      },
+      initial_value: polarityPassword || ''
+    },
+    label: {
+      type: 'plain_text',
+      text: `:lock: Password${polarityPassword ? '' : ' *'}`,
+      emoji: true
+    }
+  }
+];
 
 module.exports = buildHomePagePolarityCredentialsBlocks;

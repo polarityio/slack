@@ -1,7 +1,6 @@
 const logout = require('./logout');
-const toggleShowPasswordButton = require('./toggleShowPasswordButton');
 const toggleIncludeInSearch = require('./toggleIncludeInSearch');
-const changeUserInputStateByPath = require('./changeUserInputStateByPath');
+const changeUsernameInput = require('./changeUsernameInput');
 const toggleShowPolarityCredentials = require('./toggleShowPolarityCredentials');
 const changePasswordInput = require('./changePasswordInput');
 
@@ -11,10 +10,7 @@ module.exports = {
   appHome: {
     credentials: {
       logout,
-      toggleShowPasswordButton,
-      usernameInput: changeUserInputStateByPath(
-        'slackAppHomeState.userPolarityCredentials.polarityUsername'
-      ),
+      usernameInput: changeUsernameInput,
       passwordInput: changePasswordInput,
       showHideOverflowDropdown: toggleShowPolarityCredentials
     },

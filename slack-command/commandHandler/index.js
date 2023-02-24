@@ -4,12 +4,16 @@ const { requestWithDefaults } = require('../request');
 const { getStateValueByPath } = require('../localStateManager');
 
 const getIntegrationSearchResultsSummaryTagsBlocks = require('./getIntegrationSearchResultsSummaryTagsBlocks');
-const buildFullCommandResultBlocks = require('./buildFullCommandResultBlocks');
+const displayNoSearchStringMessage = require('./displayNoSearchStringMessage');
 const displayLoginInfoMessage = require('./displayLoginInfoMessage');
+const { buildFullCommandResultBlocks } = require('./blockBuilders');
+const { truncateBlocks } = require('../../src/dataTransformations');
 
 const handleSlackCommand = async (slackUserId, searchText, responseUrl) => {
+  if (!searchText) return await displayNoSearchStringMessage(responseUrl);
+
   const notLoggedIntoPolarity = !getStateValueByPath(
-    `${slackUserId}.slackAppHomeState.userPolarityCredentials.polarityCookie`
+    'serviceAccountCredentials.polarityCookie'
   );
   if (notLoggedIntoPolarity) return await displayLoginInfoMessage(responseUrl);
 
@@ -28,6 +32,11 @@ const handleSlackCommand = async (slackUserId, searchText, responseUrl) => {
     integrationsSearchResultsSummaryTags
   );
 
+  const only100CommandBlocksOrLess = truncateBlocks(
+    commandResultBlocks,
+    '\n:grey_exclamation: Maximum Results Displayed...\n'
+  );
+  
   await requestWithDefaults({
     method: 'POST',
     site: 'slack',
@@ -36,7 +45,7 @@ const handleSlackCommand = async (slackUserId, searchText, responseUrl) => {
     body: {
       response_type: 'in_channel',
       replace_original: true,
-      blocks: commandResultBlocks
+      blocks: only100CommandBlocksOrLess
     }
   });
 };

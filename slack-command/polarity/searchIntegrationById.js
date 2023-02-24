@@ -1,6 +1,5 @@
-const { get } = require("lodash/fp");
-const { requestWithDefaults } = require("../request");
-
+const { get } = require('lodash/fp');
+const { requestWithDefaults } = require('../request');
 
 const searchIntegrationById = async (slackUserId, integrationId, entities) =>
   get(
