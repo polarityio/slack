@@ -25,6 +25,10 @@ module.exports = {
       file: './templates/block.hbs'
     }
   },
+  slackCommandServer: {
+    portNumber: 3000,
+    polarityUrl: 'https://example.polarity.io'
+  },
   request: {
     cert: '',
     key: '',
@@ -137,30 +141,6 @@ module.exports = {
       userCanEdit: true,
       adminOnly: false
     },
-    // {
-    //   key: 'searchOnDetails',
-    //   name: 'Search After Opening',
-    //   description:
-    //     'If checked, all entities searches in the Channels listed below will be '+
-    //     'preformed after you open the overlay result.  "NOTE:" If checked while "Allow '+
-    //     'Sending Slack Messages" is unchecked, a "No Results Found" message will '+
-    //     'appear for every entity.',
-    //   default: true,
-    //   type: 'boolean',
-    //   userCanEdit: true,
-    //   adminOnly: false
-    // },
-    // {
-    //   key: 'excludeSearchChannelNames',
-    //   name: 'Slack Channel Names to Exclude from Searching',
-    //   description:
-    //     'A comma separated list of Channels Names that will be ignored during searched.\n' +
-    //     '"NOTE:" If left empty, all available Channels will be searched.',
-    //   default: 'jira_updates',
-    //   type: 'text',
-    //   userCanEdit: false,
-    //   adminOnly: true
-    // },
     {
       key: 'allowSendingMessages',
       name: 'Allow Sending Slack Messages',
