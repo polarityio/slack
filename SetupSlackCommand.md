@@ -1,18 +1,27 @@
 # Polarity Slack Command Setup Guide
 
 ## Config.js Setup
-1. Go to the [./config/config.js](./config/config.js) file, and change the `slackCommandServer`'s `portNumber` & `polarityUrl`properties to your Polarity Server's information, making sure the `portNumber` you have set has been exposed from the polarity server.
+***1***. Go to the [./config/config.js](./config/config.js) file, and change the `slackCommandServer`'s `portNumber` & `polarityUrl`properties to your Polarity Server's information, making sure the `portNumber` you have set has been exposed from the polarity server.
     > ***NOTE***: Ensure your `polarityUrl` property does not end with `/`
 
+---
 
 ## Slack App Environment Token Setup
-2. In the terminal from the root of the `./slack` integration folder (i.e. _not_ from the `./slack/slack-command` folder) run `npm run createEnvFile`, then Set the `.env` variable `POLARITY_SLACK_APP_BOT_TOKEN` to your Slack Bot Token (_from the [Polarity App Installation Guide](./AddSlackAppToWorkspace.md) Step 12_), and Set the `.env` variable `POLARITY_SLACK_APP_SIGNING_SECRET` to your Slack Signing Secret inside of the generated `./slack-command/.env` file.
-    > ***NOTE***: The `npm run createEnvFile` script will open the file in `vi`, which can be closed by typing `:q` then enter.    
+***2***. In the terminal from the root of the `./slack` integration folder (i.e. _not_ from the `./slack/slack-command` folder) run `npm run createEnvFile`
+
+***3***. Set the `.env` variable `POLARITY_SLACK_APP_BOT_TOKEN` to your Slack App `Bot User OAuth Token` (_from the [Polarity App Installation Guide](./AddSlackAppToWorkspace.md) Step 12_)
+    <div>
+      <img alt="Get User and Bot Token" src="./assets/get-tokens.png">
+    </div>
+
+***4***. Set the `.env` variable `POLARITY_SLACK_APP_SIGNING_SECRET` to your Slack App `Signing Secret` inside of the generated `./slack-command/.env` file.
+    > ***NOTE***: The `npm run createEnvFile` script will open the file in `vi`, which can be closed by typing `:wq` then `Enter`.    
    <div>
       <img alt="Slack App Signing Secret" src="./assets/app-signing-secret.png">
     </div>
 
-    > ***NOTE***: For local development and testing, or for the `npm run updateAppManifest` command, it would also be beneficial to set your `POLARITY_SLACK_APP_TOKEN` & `POLARITY_SLACK_APP_REFRESH_TOKEN` as well, which can be found/generated [HERE](https://api.slack.com/authentication/config-tokens) by Authorized Slack App Collaborators in Slack.
+***5***. *[**OPTIONAL** *Skip Steps 6-8*]* 
+For the `npm run updateAppManifest` command *OR* for local development and testing, it would also be beneficial to set your `POLARITY_SLACK_APP_TOKEN` & `POLARITY_SLACK_APP_REFRESH_TOKEN` as well, which can be found/generated at [https://api.slack.com/authentication/config-tokens](https://api.slack.com/authentication/config-tokens) by Authorized Slack App Collaborators in Slack.
    <div>
       <img alt="Slack App Config Tokens" src="./assets/app-config-tokens.png">
     </div>
@@ -21,21 +30,24 @@
    <div>
       <img alt="Authorized Slack App Collaborators" src="./assets/app-collaborators.png">
     </div>
-   
-## Update Nginx
-3. In the terminal run `npm run updateNginx`
+
+---
 
 ## Slack App Manifest Updates
-> ***NOTE***: _Steps 4-6_ can be skipped if you have your  `POLARITY_SLACK_APP_TOKEN` & `POLARITY_SLACK_APP_REFRESH_TOKEN` `.env` variables set, and instead of _Steps 4-6_  you can just run `npm run updateAppManifest` in the terminal
+> ***NOTE***: *Steps 6-8* can be skipped if you have your  `POLARITY_SLACK_APP_TOKEN` & `POLARITY_SLACK_APP_REFRESH_TOKEN` `.env` variables set.
+> 
+> Instead of *Steps 6-8*  you can just run `npm run updateAppManifest` in the terminal from the same folder as *Step 2*. 
+> 
+> This will update the Slack App Manifest with all of the correct permission *scopes* and your *Polarity Server's FQDN* automatically.
 
-4. Go to https://api.slack.com/apps/ and select the `Polarity` App
+***6***. Go to https://api.slack.com/apps/ and select the `Polarity` App
 
-5. Navigate to the App Manifest Page, and Delete the contents of the YAML App Manifest
+***7***. Navigate to the App Manifest Page, and Delete the contents of the YAML App Manifest
     <div>
       <img alt="Navigate to App Manifest" src="./assets/navigate-to-app-manifest.png">
     </div>
 
-6. Paste in ***this*** App Manifest, ensuring to replace the 3 instances of `https://<polarity-server-fqdn>` with your servers information, then Click `Save Changes`:
+***8***. Paste in ***this*** App Manifest, ensuring to replace the 3 instances of `https://<polarity-server-fqdn>` with your servers information, then Click `Save Changes`:
     ```yaml
     display_information:
       name: Polarity
@@ -84,20 +96,38 @@
       token_rotation_enabled: false
     ```
 
+---
+
+## Update Nginx
+***9***. In the terminal run `npm run updateNginx`.
+> ***NOTE***: If this command fails, you can do this step manually by adding the following to a new file you'll created called `slack-bot.conf` located at `/app/nginx/`, then running `systemctl restart nginx` from the terminal. Make sure to replace the `<port-number-from-config-js-file>` with the port number you set in the [./config/config.js](./config/config.js) file.
+ ```
+location /_slackcommand {
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_pass http://127.0.0.1:<port-number-from-config-js-file>
+},
+```
+---
+
 ## Start Slack Command Server
-7. Navigate in the terminal to the top level Slack Integration folder `./slack`, and run the command `npm run startCommandServer`, and ensure the server is running correctly, and the message `******* Slack Command Server Running on Port <port-number> *******` in your Command Server Log File [./logs/slack-command.log](./logs/slack-command.log).
+***10***. Navigate in the terminal to the top level Slack Integration folder `./slack`, and run the command `npm run startCommandServer`, and ensure the server is running correctly, and the message `******* Slack Command Server Running on Port <port-number> *******` in your Command Server Log File [./logs/slack-command.log](./logs/slack-command.log).
     > ***NOTE***: If running for local development run `npm run startCommandServerDev` instead
 
+---
+
 ## Add Polarity App to Slack
-8. Add the Polarity App to your Slack Desktop or Browser App
+***11***. Add the Polarity App to your Slack Desktop or Browser App
     <div>
       <img alt="Browse Apps" src="./assets/browse-apps.png">
       <img alt="Select Polarity App" src="./assets/select-polarity-app.png">
     </div>
 
-9. Enter valid Polarity Credentials to the Slack App Home, Select which Integrations you wish to Include in your Search, and begin Searching!
+***12***. Enter valid Polarity Credentials for the associated Polarity Service Account to the Slack App Home, Select which Integrations you wish to Include in your Search, and begin Searching!
+> ***NOTE***: Only Slack Admins will be able to see & edit the  `Polarity Service Account Credentials` in the Slack App home.
     <div>
       <img alt="Slack App Home Login" src="./assets/slack-app-home.png">
       <img alt="Slack App Home Include In Search" src="./assets/select-include-in-search.png">
       <img alt="Slack Command" src="./assets/slack-command.png">
     </div>
+
