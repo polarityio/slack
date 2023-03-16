@@ -48,53 +48,54 @@ For the `npm run updateAppManifest` command *OR* for local development and testi
     </div>
 
 ***8***. Paste in ***this*** App Manifest, ensuring to replace the 3 instances of `https://<polarity-server-fqdn>` with your servers information, then Click `Save Changes`:
-    ```yaml
-    display_information:
-      name: Polarity
-      description: Polarity's Slack Application for use in tandem with our Polarity Slack Integration.
-      background_color: "#53a13b"
-    features:
-      app_home:
-        home_tab_enabled: true
-        messages_tab_enabled: false
-        messages_tab_read_only_enabled: false
-      bot_user:
-        display_name: Polarity
-        always_online: true
-      slash_commands: 
-        - command: /polarity
-          url: https://<polarity-server-fqdn>/_slackcommand/command
-          description: The Polarity command will return the results of a search to the Overlay
-          usage_hint: Polarity Search Here
-          should_escape: false
-    oauth_config:
-      scopes:
-        user:
-          - search:read
-        bot:
-          - commands
-          - channels:read
-          - groups:read
-          - im:read
-          - mpim:read
-          - chat:write
-          - chat:write.customize
-          - chat:write.public
-          - users:read
-          - users.profile:read
 
-    settings:
-      event_subscriptions:
-        request_url: https://<polarity-server-fqdn>/_slackcommand/events
-        bot_events:
-          - app_home_opened
-      interactivity:
-        is_enabled: true
-        request_url: https://<polarity-server-fqdn>/_slackcommand/actions
-      org_deploy_enabled: false
-      socket_mode_enabled: false
-      token_rotation_enabled: false
-    ```
+```yaml
+display_information:
+  name: Polarity
+  description: Polarity's Slack Application for use in tandem with our Polarity Slack Integration.
+  background_color: "#53a13b"
+features:
+  app_home:
+    home_tab_enabled: true
+    messages_tab_enabled: false
+    messages_tab_read_only_enabled: false
+  bot_user:
+    display_name: Polarity
+    always_online: true
+  slash_commands: 
+    - command: /polarity
+      url: https://<polarity-server-fqdn>/_slackcommand/command
+      description: The Polarity command will return the results of a search to the Overlay
+      usage_hint: Polarity Search Here
+      should_escape: false
+oauth_config:
+  scopes:
+    user:
+      - search:read
+    bot:
+      - commands
+      - channels:read
+      - groups:read
+      - im:read
+      - mpim:read
+      - chat:write
+      - chat:write.customize
+      - chat:write.public
+      - users:read
+      - users.profile:read
+
+settings:
+  event_subscriptions:
+    request_url: https://<polarity-server-fqdn>/_slackcommand/events
+    bot_events:
+      - app_home_opened
+  interactivity:
+    is_enabled: true
+    request_url: https://<polarity-server-fqdn>/_slackcommand/actions
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false
+```
 
 ---
 
