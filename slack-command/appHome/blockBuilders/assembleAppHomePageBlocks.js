@@ -3,7 +3,6 @@ const buildHomePageIntegrationBlocks = require('./buildHomePageIntegrationBlocks
 const buildHomePagePolarityCredentialsBlocks = require('./buildHomePagePolarityCredentialsBlocks');
 const buildMinimizedHomePageIntegrationBlocks = require('./buildMinimizedHomePageIntegrationBlocks');
 
-
 const assembleAppHomePageBlocks = (
   userIsAdmin,
   serviceAccountCredentials,
@@ -29,12 +28,10 @@ const assembleAppHomePageBlocks = (
         },
         {
           type: 'section',
-          text: [
-            {
-              type: 'mrkdwn',
-              text: ':white_small_square: _Contact a Slack Admin to add the Polarity Service Account Credentials._\n'
-            }
-          ]
+          text: {
+            type: 'mrkdwn',
+            text: ':white_small_square: _Contact a Slack Admin to add the Polarity Service Account Credentials._\n'
+          }
         }
       ]
     : []),
