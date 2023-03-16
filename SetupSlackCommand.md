@@ -107,7 +107,7 @@ location /_slackcommand {
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_pass http://127.0.0.1:<port-number-from-config-js-file>
-},
+}
 ```
 ---
 
