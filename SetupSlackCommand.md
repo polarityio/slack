@@ -112,7 +112,7 @@ location /_slackcommand {
 ---
 
 ## Start Slack Command Server
-***10***. Navigate in the terminal to the top level Slack Integration folder `./slack`, and run the command `npm run startCommandServer`, and ensure the server is running correctly, and the message `******* Slack Command Server Running on Port <port-number> *******` in your Command Server Log File [./logs/slack-command.log](./logs/slack-command.log).
+***10***. Navigate in the terminal to the top level Slack Integration folder (`/app/polarity-server/integrations/slack`), and run the command `npm run startCommandServer`, and ensure the server is running correctly, and the message `******* Slack Command Server Running on Port <port-number> *******` in your Command Server Log File [./logs/slack-command.log](./logs/slack-command.log).
     > ***NOTE***: If running for local development run `npm run startCommandServerDev` instead
 
 ---
