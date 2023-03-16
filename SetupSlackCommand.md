@@ -118,7 +118,7 @@ npm run startCommandServer
 ```
 If the server is running correctly you will see the message `******* Slack Command Server Running *******` in your terminal.
 
-Additionally, you can check the Slack command server log file [./logs/slack-command.log](./logs/slack-command.log) which should have the message `******* Slack Command Server Running on Port <your-port> *******` in it.
+Additionally, you can check the Slack command server log file `logs/slack-command.log` which should have the message `******* Slack Command Server Running on Port <your-port> *******` in it.
 
 > ***NOTE***: If running for local development run `npm run startCommandServerDev` instead
 
