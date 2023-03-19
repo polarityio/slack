@@ -20,7 +20,6 @@ const assembleAppHomePageBlocks = (
     ? [
         {
           type: 'section',
-          block_id: 'appHome.credentials.showHideOverflowDropdown',
           text: {
             type: 'mrkdwn',
             text: '*_:exclamation: Not Logged into Polarity:_*'
