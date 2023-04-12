@@ -2,7 +2,8 @@
 
 ## Config.js Setup
 ***1***. Go to the [./config/config.js](./config/config.js) file, and change the `slackCommandServer`'s `portNumber` & `polarityUrl`properties to your Polarity Server's information, making sure the `portNumber` you have set has been exposed from the polarity server.
-    > ***NOTE***: Ensure your `polarityUrl` property does not end with `/` and it should start with `https://`
+
+> ***NOTE***: Ensure your `polarityUrl` property does not end with `/` and it should start with `https://`
 
 ---
 
