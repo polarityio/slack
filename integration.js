@@ -11,8 +11,9 @@ const loadMoreSearchMessages = require('./src/loadMoreSearchMessages');
 
 let Logger;
 let requestWithDefaults;
-const startup = (logger) => {
+const startup = async (logger) => {
   Logger = logger;
+
   requestWithDefaults = createRequestWithDefaults(Logger);
 };
 

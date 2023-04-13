@@ -1,4 +1,5 @@
 {
+  "polarityIntegrationUuid": "fe2b4570-cce1-11ed-aeee-075d3490155d",
   "name": "Slack",
   "acronym": "SLACK",
   "description": "Send Messages to Slack directly from the Overlay, and Search Entities in Slack Channel Messages.",

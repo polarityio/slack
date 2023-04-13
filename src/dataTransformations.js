@@ -16,8 +16,16 @@ const {
   isEmpty,
   get,
   isArray,
-  identity
+  identity,
+  join,
+  split,
+  getOr,
+  slice,
+  take,
+  concat,
+  __
 } = require('lodash/fp');
+const crypto = require('crypto');
 
 const { IGNORED_IPS } = require('./constants');
 
@@ -146,14 +154,13 @@ const millisToHoursMinutesAndSeconds = (millis) => {
   );
 };
 
-
 // const standardizePossibleXmlList = (arrayOrObject) =>
 //   arrayOrObject &&
 //   JSON.stringify(isArray(arrayOrObject) ? arrayOrObject : [arrayOrObject]);
 
 // const xml2js = require('xml2js');
 
-// const xmlToJson = async (xml, Logger) => {
+// const xmlToJson = async (xml) => {
 //   try {
 //     const parser = new xml2js.Parser({
 //       normalizeTags: true,
@@ -164,11 +171,61 @@ const millisToHoursMinutesAndSeconds = (millis) => {
 //     return await parser.parseStringPromise(xml);
 //   } catch (e) {
 //     const err = parseErrorToReadableJSON(e);
-//     Logger.error({ MESSAGE: 'Failed to Parse XML', xml, err });
+//     console.error({ MESSAGE: 'Failed to Parse XML', xml, err });
 //   }
 // };
 
 const sleep = async (ms = 2000) => new Promise((r) => setTimeout(r, ms));
+
+const getSetCookies = flow(get('set-cookie'), map(flow(split('; '), first)), join('; '));
+
+const encodeBase64 = (str) => str && Buffer.from(str).toString('base64');
+
+const decodeBase64 = (str) => str && Buffer.from(str, 'base64').toString('ascii');
+
+// https://github.com/breachintelligence/polarity-server/blob/main/lib/utils/encryption.js
+const encrypt = (plainText, secretKey) => {
+  if (plainText && secretKey) {
+    const ivAsBuffer = crypto.randomBytes(16);
+    const secretKeyBuffer = Buffer.from(secretKey.slice(0, 32), 'utf8');
+    const cipher = crypto.createCipheriv('aes-256-ctr', secretKeyBuffer, ivAsBuffer);
+    const cipherTextBuffer = Buffer.concat([cipher.update(plainText), cipher.final()]);
+    return ivAsBuffer.toString('hex') + ':' + cipherTextBuffer.toString('hex');
+  }
+  return plainText;
+};
+
+const decrypt = (cipherText, secretKey) => {
+  if (cipherText && secretKey) {
+    const cipherTextParts = cipherText.split(':');
+    const decipher = crypto.createDecipheriv(
+      'aes-256-ctr',
+      Buffer.from(secretKey.slice(0, 32), 'utf8'),
+      Buffer.from(cipherTextParts[0], 'hex')
+    );
+    return Buffer.concat([
+      decipher.update(Buffer.from(cipherTextParts[1], 'hex')),
+      decipher.final()
+    ]).toString('utf8');
+  }
+  return cipherText;
+};
+
+const truncateBlocks = (blocks, message) =>
+  size(blocks) > 100
+    ? flow(
+        take(99),
+        concat(__, {
+          type: 'context',
+          elements: [
+            {
+              type: 'mrkdwn',
+              text: message
+            }
+          ]
+        })
+      )(blocks)
+    : blocks;
 
 module.exports = {
   getKeys,
@@ -185,5 +242,10 @@ module.exports = {
   // xmlToJson,
   and,
   or,
-  sleep
+  sleep,
+  getSetCookies,
+  encodeBase64,
+  decodeBase64,
+  encrypt,
+  decrypt,truncateBlocks
 };
