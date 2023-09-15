@@ -3,12 +3,8 @@
   "name": "Slack",
   "acronym": "SLACK",
   "description": "Send Messages to Slack directly from the Overlay, and Search Entities in Slack Channel Messages.",
-  "entityTypes": [
-    "*"
-  ],
-  "styles": [
-    "./styles/styles.less"
-  ],
+  "entityTypes": ["*"],
+  "styles": ["./styles/styles.less"],
   "defaultColor": "light-gray",
   "block": {
     "component": {
@@ -17,6 +13,10 @@
     "template": {
       "file": "./templates/block.hbs"
     }
+  },
+  "slackCommandServer": {
+    "portNumber": 8080,
+    "polarityUrl": "https://example.polarity.io"
   },
   "request": {
     "cert": "",

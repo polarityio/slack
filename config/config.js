@@ -26,7 +26,7 @@ module.exports = {
     }
   },
   slackCommandServer: {
-    portNumber: 3000,
+    portNumber: 8080,
     polarityUrl: 'https://example.polarity.io'
   },
   request: {
@@ -34,7 +34,7 @@ module.exports = {
     key: '',
     passphrase: '',
     ca: '',
-    proxy: ""
+    proxy: ''
   },
   logging: {
     level: 'info' //trace, debug, info, warn, error, fatal
