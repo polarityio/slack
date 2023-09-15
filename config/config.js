@@ -26,7 +26,7 @@ module.exports = {
     }
   },
   slackCommandServer: {
-    portNumber: 8080,
+    portNumber: 1214,
     polarityUrl: 'https://example.polarity.io'
   },
   request: {
