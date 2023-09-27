@@ -1,7 +1,7 @@
 # Polarity Slack Command Setup Guide
 
 ## Config.js Setup
-***1***. Go to the [./config/config.js](./config/config.js) file, and change the `slackCommandServer`'s `portNumber` & `polarityUrl`properties to your Polarity Server's information, making sure the `portNumber` you have set has been exposed from the polarity server.
+***1***. Go to the [./config/slack-config.js](./config/slack-config.js) file, and change the  `portNumber` & `polarityUrl`properties to your Polarity Server's information, making sure the `portNumber` you have set has been exposed from the polarity server.
 
 > ***NOTE***: Ensure your `polarityUrl` property does not end with `/` and it should start with `https://`
 
@@ -102,12 +102,12 @@ settings:
 
 ## Update Nginx
 ***9***. In the terminal run `npm run updateNginx`.
-> ***NOTE***: If this command fails, you can do this step manually by adding the following to a new file you'll created called `slack-bot.conf` located at `/app/nginx/`, then running `systemctl restart nginx` from the terminal. Make sure to replace the `<port-number-from-config-js-file>` with the port number you set in the [./config/config.js](./config/config.js) file.
+> ***NOTE***: If this command fails, you can do this step manually by adding the following to a new file you'll created called `slack-bot.conf` located at `/app/nginx/`, then running `systemctl restart nginx` from the terminal. Make sure to replace the `<port-number-from-slack-config-js-file>` with the port number you set in the [./config/slack-config.js](./config/slack-config.js) file.
  ```
 location /_slackcommand {
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
-    proxy_pass http://127.0.0.1:<port-number-from-config-js-file>
+    proxy_pass http://127.0.0.1:<port-number-from-slack-config-js-file>
 }
 ```
 ---

@@ -9,7 +9,7 @@ const eventHandlers = require('./eventHandlers');
 const actionHandlers = require('./actionHandlers');
 const { parseErrorToReadableJSON } = require('../src/dataTransformations');
 const { inspect } = require('util');
-const PORT_NUMBER = require('../config/config').slackCommandServer.portNumber;
+const PORT_NUMBER = require('../config/slack-config').portNumber;
 
 const app = express();
 app.use(bodyParser.text({ type: 'application/*' })); // support json encoded bodies

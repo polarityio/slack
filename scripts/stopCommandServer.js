@@ -3,7 +3,7 @@ const { forEach, getOr } = require('lodash/fp');
 const pids = require('port-pid');
 
 const stopCommandServer = async () => {
-  const commandServerPort = require('../config/config.js').slackCommandServer.portNumber;
+  const commandServerPort = require('../config/slack-config').portNumber;
 
   const allPortPids = getOr([], 'all', await pids(commandServerPort));
 
