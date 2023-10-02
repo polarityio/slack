@@ -25,16 +25,12 @@ module.exports = {
       file: './templates/block.hbs'
     }
   },
-  slackCommandServer: {
-    portNumber: 3000,
-    polarityUrl: 'https://example.polarity.io'
-  },
   request: {
     cert: '',
     key: '',
     passphrase: '',
     ca: '',
-    proxy: ""
+    proxy: ''
   },
   logging: {
     level: 'info' //trace, debug, info, warn, error, fatal

@@ -21,7 +21,7 @@ const getStateValueByPath = (path) =>
     includes('config', path)
       ? {
           config: {
-            ...require('../config/config.js').slackCommandServer,
+            ...require('../config/slack-config.js'),
             ...getConfigEnvironmentVariables()
           }
         }

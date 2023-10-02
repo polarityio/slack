@@ -64,7 +64,7 @@ const getSummaryTagBlockStrings = (integrationSearchResults, searchText) => {
       /((http|ftp|https):\/\/)?([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])?/gi,
       (link) =>
         `<${
-          require('../../../config/config.js').slackCommandServer.polarityUrl
+          require('../../../config/slack-config.js').polarityUrl
         }/search?q=${searchText}|${link}>`
     )
   )(summaryTagStrings);
