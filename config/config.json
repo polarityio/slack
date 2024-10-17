@@ -3,7 +3,20 @@
   "name": "Slack",
   "acronym": "SLACK",
   "description": "Send Messages to Slack directly from the Overlay, and Search Entities in Slack Channel Messages.",
-  "entityTypes": ["*"],
+  "entityTypes": [
+    "IPv4",
+    "IPv4CIDR",
+    "IPv6",
+    "domain",
+    "url",
+    "MD5",
+    "SHA1",
+    "SHA256",
+    "email",
+    "cve",
+    "MAC",
+    "string"
+  ],
   "styles": ["./styles/styles.less"],
   "defaultColor": "light-gray",
   "block": {
@@ -13,13 +26,6 @@
     "template": {
       "file": "./templates/block.hbs"
     }
-  },
-  "request": {
-    "cert": "",
-    "key": "",
-    "passphrase": "",
-    "ca": "",
-    "proxy": ""
   },
   "logging": {
     "level": "info"

@@ -3,7 +3,20 @@ module.exports = {
   acronym: 'SLACK',
   description:
     'Send Messages to Slack directly from the Overlay, and Search Entities in Slack Channel Messages.',
-  entityTypes: ['*'],
+  entityTypes: [
+    'IPv4',
+    'IPv4CIDR',
+    'IPv6',
+    'domain',
+    'url',
+    'MD5',
+    'SHA1',
+    'SHA256',
+    'email',
+    'cve',
+    'MAC',
+    'string'
+  ],
   /* NOTE: If the `allText` customType is commented in, you must make the integration 
     On Demand Only, by commenting in `onDemandOnly: true,` as well.  Without this, it is
     possible crashes could occur on streaming mode.
