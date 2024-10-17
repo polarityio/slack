@@ -22,7 +22,7 @@
     "lodash": "^4.17.21",
     "node-cache": "^5.1.2",
     "port-pid": "0.0.7",
-    "postman-request": "^2.88.1-postman.33",
+    "postman-request": "^2.88.1-postman.40",
     "tsscmp": "^1.0.6"
   },
   "devDependencies": {
