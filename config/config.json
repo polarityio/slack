@@ -3,6 +3,29 @@
   "name": "Slack",
   "acronym": "SLACK",
   "description": "Send Messages to Slack directly from the Overlay, and Search Entities in Slack Channel Messages.",
+  "supportsAdditionalCustomTypes": true,
+  "dataTypes": [
+    "IPv4",
+    "IPv4CIDR",
+    "IPv6",
+    "domain",
+    "url",
+    "MD5",
+    "SHA1",
+    "SHA256",
+    "email",
+    "cve",
+    "MAC",
+    "string",
+    {
+      "name": "All Text",
+      "description": "Captures all searched text up to 256 characters",
+      "editable": false,
+      "enabled": false,
+      "key": "allText",
+      "regex": "\\S[\\s\\S]{0,256}\\S"
+    }
+  ],
   "entityTypes": [
     "IPv4",
     "IPv4CIDR",
