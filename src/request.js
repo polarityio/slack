@@ -10,13 +10,14 @@ const {
   first,
   some,
   includes,
-  __
+  __,
+  eq
 } = require('lodash/fp');
 const { parallelLimit } = require('async');
 
 const {
   requests: { createRequestWithDefaults },
-  helpers: { sleep }
+  helpers: { sleep },
 } = require('polarity-integration-utils');
 const config = require('../config/config');
 
@@ -36,10 +37,12 @@ const requestWithDefaults = createRequestWithDefaults({
           ? options.userToken
           : options.botToken
       }`
-    }
+    },
+    json: true
   }),
-  setPostprocessRequestSuccess: (response) => {
+  postprocessRequestResponse: (response) => {
     const requestIsNotOk = flow(get('body.ok'), eq(false))(response);
+
     if (requestIsNotOk || response.statusCode >= 400) {
       const requestError = Error('Request Error');
       requestError.status = response.statusCode;
@@ -81,7 +84,8 @@ const handleRetryAfterExceededRateLimit = async (error, requestOptions) => {
     throw error;
   }
   const headers = JSON.parse(error.headers);
-  const millisecondsToWait = parseInt(headers['retry-after'] || headers['Retry-After'] || 1, 10) * 1000;
+  const millisecondsToWait =
+    parseInt(headers['retry-after'] || headers['Retry-After'] || 1, 10) * 1000;
 
   await sleep(millisecondsToWait);
 
