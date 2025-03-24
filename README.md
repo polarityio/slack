@@ -7,6 +7,7 @@ The Polarity Slack Integration allows you to ***Send Messages to Channels in Sla
 
 > ***NOTE:*** Instead of `npm install` it would be best to run `npm install --production`.
 > ***NOTE:*** You must go through the process of creating your `Polarity Slack App` in your Slack instance.  Instructions on how to do this can be found in the [**Polarity App Installation Guide**](./AddSlackAppToWorkspace.md).
+> ***NOTE:*** If you are getting `Rate Limit Exceeded - You might have too many Slack Channels or too many messages in the channels.` repeatedly, you might need reduce the channels your credentials have access to search in the Slack Credentials dashboard.
 
 <div style="display:flex; justify-content:center; align-items: flex-start;">
   <img width="300" alt="Integration Example Search" src="./assets/int-example-search.png">

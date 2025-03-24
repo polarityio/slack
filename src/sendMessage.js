@@ -1,12 +1,13 @@
-const { parseErrorToReadableJSON } = require('./dataTransformations');
+const {
+  logging: { getLogger },
+  errors: { parseErrorToReadableJson }
+} = require('polarity-integration-utils');
 
-const sendMessage = async (
-  { text, channel },
-  options,
-  requestWithDefaults,
-  callback,
-  Logger
-) => {
+const { requestWithDefaults } = require('./request');
+
+const sendMessage = async ({ text, channel }, options, callback) => {
+  const Logger = getLogger();
+
   try {
     await requestWithDefaults({
       method: 'POST',
@@ -23,7 +24,7 @@ const sendMessage = async (
 
     callback(null, {});
   } catch (error) {
-    const err = parseErrorToReadableJSON(error);
+    const err = parseErrorToReadableJson(error);
     Logger.error(
       {
         detail: 'Failed to Message Channel',

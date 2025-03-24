@@ -1,7 +1,7 @@
 const { isEmpty, get } = require('lodash/fp');
 const reduce = require('lodash/fp/reduce').convert({ cap: false });
 
-const validateOptions = (options, callback, Logger) => {
+const validateOptions = (options, callback) => {
   const stringOptionsErrorMessages = {
     url: 'You must provide a valid Slack URL',
     ...(options.allowSendingMessages.value && {

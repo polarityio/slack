@@ -1,14 +1,13 @@
 const { flow, get, concat, __, compact } = require('lodash/fp');
-const NodeCache = require('node-cache');
+const { requestWithDefaults } = require('./request');
 
+const NodeCache = require('node-cache');
 const channelsCache = new NodeCache({
   stdTTL: 30 * 60
 });
 
 const getSlackChannels = async (
   options,
-  requestWithDefaults,
-  Logger,
   aggChannels,
   cursor
 ) => {
@@ -32,7 +31,7 @@ const getSlackChannels = async (
   if(!nextCursor) channelsCache.set('channels', channels);
 
   return nextCursor
-    ? await getSlackChannels(options, requestWithDefaults, Logger, channels, nextCursor)
+    ? await getSlackChannels(options, channels, nextCursor)
     : channels;
 };
 

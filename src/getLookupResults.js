@@ -22,7 +22,7 @@ const createLookupResults = require('./createLookupResults');
 const getSlackChannels = require('./getSlackChannels');
 const searchMessages = require('./searchMessages');
 
-const getLookupResults = async (entities, options, requestWithDefaults, Logger) => {
+const getLookupResults = async (entities, options) => {
   const entitiesWithCustomTypesSpecified = map(
     ({ type, types, ...entity }) => ({
       ...entity,
@@ -35,16 +35,14 @@ const getLookupResults = async (entities, options, requestWithDefaults, Logger) 
     entitiesWithCustomTypesSpecified
   );
 
-  const filteredEntities = filterOutInvalidEntities(entitiesPartition, options, Logger);
-  const channels = await getSlackChannels(options, requestWithDefaults, Logger);
+  const filteredEntities = filterOutInvalidEntities(entitiesPartition, options);
+  const channels = await getSlackChannels(options);
 
   const foundMessagesByEntity = options.allowSearchingMessages
     ? await searchMessages(
         filteredEntities,
         channels,
-        options,
-        requestWithDefaults,
-        Logger
+        options
       )
     : [];
 
@@ -52,14 +50,13 @@ const getLookupResults = async (entities, options, requestWithDefaults, Logger) 
     filteredEntities,
     channels,
     foundMessagesByEntity,
-    options,
-    Logger
+    options
   );
 
   return lookupResults.concat(ignoredIpLookupResults);
 };
 
-const filterOutInvalidEntities = (entities, options, Logger) =>
+const filterOutInvalidEntities = (entities, options) =>
   flow(
     filter((entity) => {
       const trimmedEntityValue = flow(get('value'), trim)(entity);
@@ -93,7 +90,7 @@ const filterOutInvalidEntities = (entities, options, Logger) =>
           noDuplicateEntityValue);
 
       const entityLength = size(trimmedEntityValue);
-      
+
       return (
         isNotWhitespace &&
         isCorrectType &&

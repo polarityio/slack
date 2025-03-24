@@ -15,8 +15,9 @@ const {
   eq,
 } = require('lodash/fp');
 
-const NodeCache = require('node-cache');
+const { requestWithDefaults } = require('./request');
 
+const NodeCache = require('node-cache');
 const profilePictureCache = new NodeCache({
   stdTTL: 6 * 60 * 60 //Cache profile picture for 6 hours
 });
@@ -25,8 +26,6 @@ const searchMessages = async (
   entities,
   channels,
   options,
-  requestWithDefaults,
-  Logger,
   currentSearchResultsPage = 1
 ) =>
   await Promise.all(
@@ -66,17 +65,13 @@ const searchMessages = async (
         return searchMessages(
           entities,
           options,
-          requestWithDefaults,
-          Logger,
           currentSearchResultsPage + 1
         );
       }
 
       await getAndCacheProfilePictureLinksByTeamAndUserId(
         foundMessagesInChannels,
-        options,
-        requestWithDefaults,
-        Logger
+        options
       );
 
       const foundMessagesFromSearch = flow(
@@ -121,21 +116,19 @@ const formatMessagesForUi = (channels) => (message) => ({
 
 const getAndCacheProfilePictureLinksByTeamAndUserId = async (
   foundMessagesInChannels,
-  options,
-  requestWithDefaults,
-  Logger
+  options
 ) =>
   await Promise.all(
     flow(
       map(get('team')),
       uniq,
       filter(negate(profilePictureCache.get)),
-      map(putProfilePictureLinksForTeamIdInCache(options, requestWithDefaults, Logger))
+      map(putProfilePictureLinksForTeamIdInCache(options))
     )(foundMessagesInChannels)
   );
 
 const putProfilePictureLinksForTeamIdInCache =
-  (options, requestWithDefaults, Logger) => async (team_id, nextCursor) => {
+  (options) => async (team_id, nextCursor) => {
     const responseBody = get(
       'body',
       await requestWithDefaults({
