@@ -19,6 +19,8 @@ const doLookup = async (entities, options, cb) => {
   try {
     Logger.debug({ entities }, 'Entities');
     options.url = options.url.endsWith('/') ? options.url.slice(0, -1) : options.url;
+    options.maxConcurrent = 1;
+    options.minimumMillisecondsRequestWillTake = 200;
 
     lookupResults = await getLookupResults(entities, options);
   } catch (error) {

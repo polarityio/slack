@@ -26,6 +26,7 @@ const requestWithDefaults = createRequestWithDefaults({
   config,
   roundedSuccessStatusCodes: [200, 400],
   requestOptionsToOmitFromLogsKeyPaths: ['headers.Authorization'],
+  useLimiter: true,
   preprocessRequestOptions: async ({ options, ...requestOptions }) => ({
     ...requestOptions,
     headers: {
