@@ -1,6 +1,6 @@
 {
   "name": "slack",
-  "version": "3.1.6",
+  "version": "3.2.0",
   "main": "./integration.js",
   "private": true,
   "license": "MIT",
@@ -19,10 +19,10 @@
     "body-parser": "^1.20.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "lodash": "^4.17.21",
     "node-cache": "^5.1.2",
     "port-pid": "0.0.7",
-    "postman-request": "^2.88.1-postman.40",
+    "async": "^3.2.6",
+    "polarity-integration-utils": "^0.1.0",
     "tsscmp": "^1.0.6"
   },
   "devDependencies": {

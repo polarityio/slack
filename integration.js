@@ -1,36 +1,30 @@
 'use strict';
 
-const _validateOptions = require('./src/validateOptions');
-const createRequestWithDefaults = require('./src/createRequestWithDefaults');
+const {
+  logging: { setLogger, getLogger },
+  errors: { parseErrorToReadableJson }
+} = require('polarity-integration-utils');
+
+const validateOptions = require('./src/validateOptions');
 
 const getLookupResults = require('./src/getLookupResults');
-const { parseErrorToReadableJSON } = require('./src/dataTransformations');
 
 const sendMessage = require('./src/sendMessage');
 const loadMoreSearchMessages = require('./src/loadMoreSearchMessages');
 
-let Logger;
-let requestWithDefaults;
-const startup = async (logger) => {
-  Logger = logger;
-
-  requestWithDefaults = createRequestWithDefaults(Logger);
-};
-
 const doLookup = async (entities, options, cb) => {
-  Logger.debug({ entities }, 'Entities');
-  options.url = options.url.endsWith('/') ? options.url.slice(0, -1) : options.url;
+  const Logger = getLogger();
 
   let lookupResults;
   try {
-    lookupResults = await getLookupResults(
-      entities,
-      options,
-      requestWithDefaults,
-      Logger
-    );
+    Logger.debug({ entities }, 'Entities');
+    options.url = options.url.endsWith('/') ? options.url.slice(0, -1) : options.url;
+    options.maxConcurrent = 1;
+    options.minimumMillisecondsRequestWillTake = 200;
+
+    lookupResults = await getLookupResults(entities, options);
   } catch (error) {
-    const err = parseErrorToReadableJSON(error);
+    const err = parseErrorToReadableJson(error);
     Logger.error({ error, formattedError: err }, 'Get Lookup Results Failed');
 
     return cb({ detail: error.message || 'Command Failed', err });
@@ -43,13 +37,12 @@ const doLookup = async (entities, options, cb) => {
 const getOnMessage = { sendMessage, loadMoreSearchMessages };
 
 const onMessage = ({ action, data: actionParams }, options, callback) =>
-  getOnMessage[action](actionParams, options, requestWithDefaults, callback, Logger);
+  getOnMessage[action](actionParams, options, callback);
 
-const validateOptions = (options, callback) =>
-  _validateOptions(options, callback, Logger);
+
 
 module.exports = {
-  startup,
+  startup: setLogger,
   validateOptions,
   doLookup,
   onMessage

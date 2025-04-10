@@ -1,13 +1,16 @@
-const { parseErrorToReadableJSON } = require('./dataTransformations');
+const {
+  logging: { getLogger },
+  errors: { parseErrorToReadableJson }
+} = require('polarity-integration-utils');
 const searchMessages = require('./searchMessages');
 
 const loadMoreSearchMessages = async (
   { entity, channels, currentSearchResultsPage },
   options,
-  requestWithDefaults,
-  callback,
-  Logger
+  callback
 ) => {
+  const Logger = getLogger();
+
   try {
     const [
       {
@@ -19,8 +22,6 @@ const loadMoreSearchMessages = async (
       [entity],
       channels,
       options,
-      requestWithDefaults,
-      Logger,
       currentSearchResultsPage + 1
     );
 
@@ -28,9 +29,9 @@ const loadMoreSearchMessages = async (
       foundMessagesFromSearch,
       currentSearchResultsPage: _currentSearchResultsPage,
       totalNumberOfSearchResultPages
-    })
+    });
   } catch (error) {
-    const err = parseErrorToReadableJSON(error);
+    const err = parseErrorToReadableJson(error);
     Logger.error(
       {
         detail: 'Failed to Load More Messages',
