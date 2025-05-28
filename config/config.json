@@ -90,11 +90,11 @@
     {
       "key": "allowSearchingMessages",
       "name": "Allow Searching Slack Messages",
-      "description": "If checked, all entities will be search in Slack. (This option must be set to \"Users can view only\" or \"Users can view and edit\")",
+      "description": "If checked, all entities will be search in Slack.",
       "default": true,
       "type": "boolean",
-      "userCanEdit": true,
-      "adminOnly": false
+      "userCanEdit": false,
+      "adminOnly": true
     },
     {
       "key": "sortBy",
@@ -120,25 +120,25 @@
         }
       ],
       "multiple": false,
-      "userCanEdit": true,
-      "adminOnly": false
+      "userCanEdit": false,
+      "adminOnly": true
     },
     {
       "key": "allowSendingMessages",
       "name": "Allow Sending Slack Messages",
-      "description": "If checked, a prompt will show for every entity searched, regardless of Search Results, allowing you to send a message to any Channels listed below. (This option must be set to \"Users can view only\" or \"Users can view and edit\")",
-      "default": true,
+      "description": "If checked, a prompt will show for every entity searched, regardless of Search Results, allowing you to send a message to any Channels listed below. This option must be set to \"Lock and show option for all users\".",
+      "default": false,
       "type": "boolean",
-      "userCanEdit": true,
+      "userCanEdit": false,
       "adminOnly": false
     },
     {
       "key": "messagingChannelNames",
       "name": "Slack Channel Names for Messages",
-      "description": "A comma separated list of Channels Names anyone using the Integration can send a messages to. If you want to send messages to a private channel, you must send a message in the channel containing \"@Polarity\" in it first.",
+      "description": "A comma separated list of Channels Names anyone using the Integration can send a messages to. If you want to send messages to a private channel, you must send a message in the channel containing \"@Polarity\" in it first. This option must be set to \"Lock and show option for all users\".",
       "default": "general",
       "type": "text",
-      "userCanEdit": true,
+      "userCanEdit": false,
       "adminOnly": false
     },
     {
@@ -147,16 +147,16 @@
       "description": "The name you wish to use when Posting Messages on Slack Channels.  If left empty the default display name will just be \"Polarity\".",
       "default": "",
       "type": "text",
-      "userCanEdit": true,
-      "adminOnly": false
+      "userCanEdit": false,
+      "adminOnly": true
     },
     {
       "key": "addEntityToMessageByDefault",
       "name": "Add Entity Value to Message By Default",
-      "description": "If checked, the entity value will be added to the Slack Messaging Box in the Overlay by Default",
+      "description": "If checked, the entity value will be added to the Slack Messaging Box in the Overlay by Default. This option must be set to \"Lock and show option for all users\"",
       "default": true,
       "type": "boolean",
-      "userCanEdit": true,
+      "userCanEdit": false,
       "adminOnly": false
     }
   ]
