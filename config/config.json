@@ -7,16 +7,22 @@
   "supportsAdditionalCustomTypes": true,
   "dataTypes": [
     "IPv4",
-    "IPv4CIDR",
     "IPv6",
     "domain",
-    "url",
     "MD5",
     "SHA1",
     "SHA256",
     "email",
     "cve",
     "MAC",
+    {
+      "type": "IPv4CIDR",
+      "enabled": false
+    },
+    {
+      "type": "url",
+      "enabled": false
+    },
     {
       "type": "string",
       "enabled": false
@@ -91,7 +97,7 @@
     {
       "key": "allowSearchingMessages",
       "name": "Allow Searching Slack Messages",
-      "description": "If checked, all entities will be search in Slack.",
+      "description": "If checked, the integration will search and return Slack messages that match enabled entity values.",
       "default": true,
       "type": "boolean",
       "userCanEdit": false,
