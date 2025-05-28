@@ -109,7 +109,6 @@ To obtain the required User and Bot authentication tokens required by the Polari
 
 ## Polarity Slack Integration Permissions
 
-Overview
 The Polarity Slack integration supports searching Slack as well as allowing users to send messages from the Overlay Window. The following permissions are required for full functionality:
 
 
