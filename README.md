@@ -5,7 +5,6 @@
 The Polarity Slack Integration allows you to ***Send Messages to Channels in Slack*** directly from the Overlay , and ***Search Entities in Slack Channel Messages*** for all entity types.
 
 
-> ***NOTE:*** Instead of `npm install` it would be best to run `npm install --production`.
 > ***NOTE:*** You must go through the process of creating your `Polarity Slack App` in your Slack instance.  Instructions on how to do this can be found in the [**Polarity App Installation Guide**](./AddSlackAppToWorkspace.md).
 > ***NOTE:*** If you are getting `Rate Limit Exceeded - You might have too many Slack Channels or too many messages in the channels.` repeatedly, you might need reduce the channels your credentials have access to search in the Slack Credentials dashboard.
 
@@ -13,35 +12,26 @@ The Polarity Slack Integration allows you to ***Send Messages to Channels in Sla
   <img width="300" alt="Integration Example Search" src="./assets/int-example-search.png">
   <img width="300" alt="Integration Example Message Channels" src="./assets/int-example-message-channels.png">
 </div>
+
 To learn more about Slack, visit the [official website](https://slack.com/).
 
 ## Private Channels
 - ***Searching:*** To search private channels, make sure the user that clicked `Allow` in `Step 9` in the [**Polarity App Installation Guide**](./AddSlackAppToWorkspace.md) is in that private channel you want to search.
 - ***Messaging:*** To allow messaging in private channels, you must first send a `@Polarity` message in the private channel, and invite the app to the channel.
 
-
-## Polarity Slack Command
-- To Enable to `/polarity` Slack Command follow the instructions found in the [**Polarity Slack Command Setup Guide**](./SetupSlackCommand.md).
-- > ***NOTE:*** The Slack Command does not support SAML authentication to the Polarity Server in it's current version.  If you would like it to in the future please reach out to `support@polarity.io` about supporting SAML authentication on for the `/polarity` Slack Command.
-
-- > ***NOTE:*** When adding new integrations to you Polarity Server or restarting your Polarity Server, the Authentication set via the Slack Polarity App will need to be re-entered.  This is to be expected with the current version of the app.
-- > ***NOTE:*** The Slack Command will return only some, and not necessarily all, of the Overlay Summary Tags for the Integrations you are Subscribed to in the Polarity Slack App Home (_See [**Polarity Slack Command Setup Guide**](./SetupSlackCommand.md) Step 8 for reference_).  This is to be expected with the current version of the app.  If you find an Integration isn't returning Summary Tags and you would like it to in the future, please reach out to `support@polarity.io` about which Integration you would like to be supported by the `/polarity` Slack Command.
-
-
 ## Slack Integration Options
 ### Slack API URL
 The URL of the Slack API you would like to connect to.  
 
 ### User Token
-The API User Token associated with the your Polarity Slack App. Your User Token should start with "xoxp-###...". Optional if you don't wish to search.
+The API User Token associated with your Polarity Slack App. Your User Token should start with "xoxp-###...". Optional if you don't wish to search.
 
 ### Bot Token
-The API Bot Token associated with the your Polarity Slack App. Your User Token should start with "xoxb-###...". 
+The API Bot Token associated with your Polarity Slack App. Your User Token should start with "xoxb-###...". 
 
 ### Ignore Entity Types
 When checked, strings searched that are one of our predefined entity types (IPv4, IPv6, IPv4CIDR, MD5, SHA1, SHA256, MAC, string, email, domain, url, and cve) will not be displayed in the overlay.
 
-> ***NOTE:*** By default commented out in the `./config/config.js` file.
 ### Minimum Input Length
 The minimum text input length for a string to be considered Input. (default: 5)
 
@@ -49,7 +39,7 @@ The minimum text input length for a string to be considered Input. (default: 5)
 The maximum text input length for a string to be considered Input. (default: 256)
 
 ### Allow Searching Slack Messages
-If checked, all entities will be search in Slack.
+If checked, all entities will be searched in Slack.
 > ***NOTE:*** This option must be set to "Users can view only" or "Users can view and edit"
 
 ### Sort Message Search Results By
