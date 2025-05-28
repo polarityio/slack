@@ -3,6 +3,7 @@
   "name": "Slack",
   "acronym": "SLACK",
   "description": "Send Messages to Slack directly from the Overlay, and Search Entities in Slack Channel Messages.",
+  "onDemandOnly": true,
   "supportsAdditionalCustomTypes": true,
   "dataTypes": [
     "IPv4",
