@@ -1,13 +1,16 @@
 const { flow, map, get, size, find, every, eq } = require('lodash/fp');
-
+const {
+  logging: { getLogger }
+} = require('polarity-integration-utils');
 
 const createLookupResults = (
   entitiesPartition,
-  channels,
+  channelsToSendTo,
   foundMessagesByEntity,
   options
 ) =>
   map((entity) => {
+    const Logger = getLogger();
     const {
       foundMessagesFromSearch,
       totalNumberOfSearchResultPages,
@@ -18,17 +21,19 @@ const createLookupResults = (
       currentSearchResultsPage: 0
     };
 
+    Logger.info({ foundMessagesFromSearch, options }, 'createLookupResults');
+
     const lookupResult = {
       entity,
       data:
-        (!options.allowSendingMessages && size(foundMessagesFromSearch)) ||
-        (options.allowSendingMessages && every(size, [channels]))
+        size(foundMessagesFromSearch) ||
+        (options.allowSendingMessages && every(size, [channelsToSendTo]))
           ? {
               summary: []
-                .concat(options.allowSendingMessages ? 'Message Channels' : [])
+                .concat(options.allowSendingMessages && size(channelsToSendTo) ? 'Message Channels' : [])
                 .concat(size(foundMessagesFromSearch) ? 'Search Results' : []),
               details: {
-                channels,
+                channelsToSendTo,
                 foundMessagesFromSearch,
                 totalNumberOfSearchResultPages,
                 currentSearchResultsPage

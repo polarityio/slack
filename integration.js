@@ -11,8 +11,9 @@ const getLookupResults = require('./src/getLookupResults');
 
 const sendMessage = require('./src/sendMessage');
 const loadMoreSearchMessages = require('./src/loadMoreSearchMessages');
+const getUserAvatars = require('./src/getUserAvatars');
 
-const doLookup = async (entities, options, cb) => {
+async function doLookup(entities, options, cb) {
   const Logger = getLogger();
 
   let lookupResults;
@@ -32,14 +33,45 @@ const doLookup = async (entities, options, cb) => {
 
   Logger.trace({ lookupResults }, 'Lookup Results');
   cb(null, lookupResults);
-};
+}
 
-const getOnMessage = { sendMessage, loadMoreSearchMessages };
+const getOnMessage = { sendMessage, loadMoreSearchMessages, getUserAvatars };
 
-const onMessage = ({ action, data: actionParams }, options, callback) =>
-  getOnMessage[action](actionParams, options, callback);
+async function onMessage({ action, data: actionParams }, options, callback) {
+  const Logger = getLogger();
 
+  try {
+    const result = await getOnMessage[action](actionParams, options);
+    callback(null, result);
+  } catch (error) {
+    const err = parseErrorToReadableJson(error);
+    Logger.error(
+      {
+        detail: `onMessage action ${action} failed`,
+        options: {
+          ...options,
+          userToken: '*********',
+          botToken: '*********'
+        },
+        formattedError: err
+      },
+      `onMessage action ${action} failed`
+    );
 
+    const { message, detail, status } = err;
+
+    return callback({
+      errors: [
+        {
+          err,
+          detail: `${message}${detail ? ` - ${detail}` : ''}${
+            status ? `, Code: ${status}` : ''
+          }`
+        }
+      ]
+    });
+  }
+}
 
 module.exports = {
   startup: setLogger,

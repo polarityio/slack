@@ -1,50 +1,33 @@
-const {
-  get,
-  map,
-  flow,
-  filter,
-  negate,
-  toInteger,
-  uniq,
-  reduce,
-  __,
-  size,
-  multiply,
-  split,
-  find,
-  eq,
-} = require('lodash/fp');
+const { get, map, flow, filter, toInteger, size, multiply, split } = require('lodash/fp');
+const { DateTime, Duration } = require('luxon');
 
 const { requestWithDefaults } = require('./request');
 
-const NodeCache = require('node-cache');
-const profilePictureCache = new NodeCache({
-  stdTTL: 6 * 60 * 60 //Cache profile picture for 6 hours
-});
-
-const searchMessages = async (
-  entities,
-  channels,
-  options,
-  currentSearchResultsPage = 1
-) =>
+const searchMessages = async (entities, options, currentSearchResultsPage = 1) =>
   await Promise.all(
     map(async (entity) => {
       const [sort, sort_dir] = flow(get('sortBy.value'), split(','))(options);
-      
+
+      const channelsToSearch = options.slackChannelsToSearch
+        .split(',')
+        .map((channel) => channel.trim())
+        .filter((channel) => !!channel);
+
+      const query = createQuery(entity, channelsToSearch, options);
       const foundMessages = get(
         'body.messages',
         await requestWithDefaults({
           url: `${options.url}/search.messages`,
           method: 'GET',
           qs: {
-            query: entity.value,
-            count: 50,
+            query,
+            count: 100,
             page: currentSearchResultsPage,
             sort,
             sort_dir
           },
-          options
+          options,
+          retryOnLimit: true
         })
       );
 
@@ -52,43 +35,151 @@ const searchMessages = async (
         foundMessages
       );
 
-      const foundMessagesInChannels = flow(
-        get('matches'),
-        filter(get('channel.is_channel'))
-      )(foundMessages);
+      const totalCount = flow(get('pagination.total_count'))(foundMessages);
 
-      if (
-        size(foundMessages) &&
-        !size(foundMessagesInChannels) &&
-        currentSearchResultsPage < totalNumberOfSearchResultPages
-      ) {
-        return searchMessages(
-          entities,
-          options,
-          currentSearchResultsPage + 1
-        );
+      let searchPermission = options.searchPermissions.value;
+      const filterMethod =
+        // Only use a filter if there are no channels to search set
+        channelsToSearch.length > 0
+          ? null
+          : searchPermission === 'public'
+          ? isPublicChannel
+          : searchPermission === 'publicPrivate'
+          ? isPublicPrivateChannel
+          : searchPermission === 'private'
+          ? isPrivateChannel
+          : null;
+
+      if (!filterMethod && channelsToSearch.length === 0) {
+        throw new Error('Invalid search permissions set as integration option');
       }
 
-      await getAndCacheProfilePictureLinksByTeamAndUserId(
-        foundMessagesInChannels,
-        options
-      );
+      const foundMessagesAfterFiltering = foundMessages.matches.filter((match) => {
+        if (filterMethod) {
+          return filterMethod(match.channel);
+        }
+        return true;
+      });
+
+      if (
+        size(foundMessages) === 0 &&
+        size(foundMessagesAfterFiltering) > 0 &&
+        currentSearchResultsPage < totalNumberOfSearchResultPages &&
+        currentSearchResultsPage < 100
+      ) {
+        return searchMessages(entities, options, currentSearchResultsPage + 1);
+      }
 
       const foundMessagesFromSearch = flow(
-        map(formatMessagesForUi(channels)),
+        map(formatMessagesForUi),
         filter(get('message'))
-      )(foundMessagesInChannels);
+      )(foundMessagesAfterFiltering);
 
       return {
         entity,
         foundMessagesFromSearch,
         totalNumberOfSearchResultPages,
-        currentSearchResultsPage
+        currentSearchResultsPage,
+        totalCount
       };
     }, entities)
   );
 
-const formatMessagesForUi = (channels) => (message) => ({
+/**
+ * Return today's date minus a time window, formatted as YYYY-MM-DD.
+ *
+ * @param {string|object} timeWindow - ISO-8601 duration (e.g., "P3D", "PT2H30M")
+ *                                     or a Duration-like object, e.g. { days: 3 }.
+ * @param {object} [options]
+ * @param {string} [options.zone='utc'] - Time zone (e.g., 'utc', 'local', 'America/New_York').
+ * @returns {string} e.g., "2024-01-30"
+ */
+function nowMinusDate(timeWindow, { zone = 'utc' } = {}) {
+  const duration =
+    typeof timeWindow === 'string'
+      ? Duration.fromISO(timeWindow)
+      : Duration.fromObject(timeWindow || {});
+
+  if (!duration.isValid) {
+    throw new Error(
+      `Invalid duration. Use ISO-8601 (e.g., "P3D", "PT2H30M") or an object like { days: 3 }.`
+    );
+  }
+
+  return DateTime.now().setZone(zone).minus(duration).toFormat('yyyy-MM-dd');
+}
+
+function createQuery(entity, channelsToSearch, options) {
+  let query = entity.value + ' ';
+
+  if (channelsToSearch.length > 0) {
+    const channelsToSearchSyntax = channelsToSearch.map(
+      (channel) => `in:${channel.trim()} `
+    );
+    query += channelsToSearchSyntax.join(' ');
+  }
+
+  if (options.searchWindow.value !== 'P0D') {
+    query += ` after:${nowMinusDate(options.searchWindow.value)}`;
+  }
+
+  return query;
+}
+
+/**
+ * Returns true if the provided channel object is a public channel
+ * Returns false if the channel is private (is_private), is a multi-user direct message (is_mpim)
+ * is a group (is_group), or is a direct message (is_im).
+ * @param channel
+ * @returns {*|boolean}
+ */
+function isPublicChannel(channel) {
+  return (
+    channel &&
+    channel.is_channel &&
+    !channel.is_private &&
+    !channel.is_mpim &&
+    !channel.is_group &&
+    !channel.is_im
+  );
+}
+
+/**
+ * Returns true if the provided channel object is a public or private channel
+ * Returns false if the channel is a multi-user direct message (is_mpim)
+ * is a group (is_group), or is a direct message (is_im).
+ * @param channel
+ * @returns {*|boolean}
+ */
+function isPrivateChannel(channel) {
+  return (
+    channel &&
+    channel.is_channel &&
+    channel.is_private &&
+    !channel.is_mpim &&
+    !channel.is_group &&
+    !channel.is_im
+  );
+}
+
+/**
+ * Returns true if the provided channel object is a public or private channel
+ * Returns false if the channel is a multi-user direct message (is_mpim)
+ * is a group (is_group), or is a direct message (is_im).
+ * @param channel
+ * @returns {*|boolean}
+ */
+function isPublicPrivateChannel(channel) {
+  return (
+    channel &&
+    channel.is_channel &&
+    !channel.is_mpim &&
+    !channel.is_group &&
+    !channel.is_im
+  );
+}
+
+const formatMessagesForUi = (message) => ({
   messageLink: get('permalink', message),
   channelName: get('channel.name', message),
   datetime: flow(
@@ -97,59 +188,14 @@ const formatMessagesForUi = (channels) => (message) => ({
     multiply(1000),
     (unixDate) => new Date(unixDate)
   )(message),
-  profilePictureSrc: flow(
-    get('team'),
-    profilePictureCache.get,
-    get(get('user', message))
-  )(message),
-  channelIsPrivate: flow(
-    find(flow(get('id'), eq(get('channel.id', message)))),
-    get('is_private')
-  )(channels),
+  channelIsPrivate: get('channel.is_private', message),
   username: get('username', message),
+  userId: get('user', message),
   message: get('text', message),
   displayMessage:
     flow(get('text'), (x) => x.slice(0, 120))(message) +
     (flow(get('text'), size)(message) > 120 ? '...' : ''),
   shouldShowMoreMessage: flow(get('text'), size)(message) > 120
 });
-
-const getAndCacheProfilePictureLinksByTeamAndUserId = async (
-  foundMessagesInChannels,
-  options
-) =>
-  await Promise.all(
-    flow(
-      map(get('team')),
-      uniq,
-      filter(negate(profilePictureCache.get)),
-      map(putProfilePictureLinksForTeamIdInCache(options))
-    )(foundMessagesInChannels)
-  );
-
-const putProfilePictureLinksForTeamIdInCache =
-  (options) => async (team_id, nextCursor) => {
-    const responseBody = get(
-      'body',
-      await requestWithDefaults({
-        url: `${options.url}/users.list`,
-        method: 'GET',
-        qs: { ...(nextCursor && { cursor: nextCursor }), limit: 500, team_id },
-        options
-      })
-    );
-
-    const profilePictureLinksByUserId = flow(
-      get('members'),
-      reduce((agg, user) => ({ ...agg, [user.id]: get('profile.image_72', user) }), {})
-    )(responseBody);
-
-    profilePictureCache.set(team_id, profilePictureLinksByUserId);
-
-    const next_cursor = get('response_metadata.next_cursor', responseBody);
-
-    if (next_cursor)
-      return await putProfilePictureLinksForTeamIdInCache(team_id, next_cursor);
-  };
 
 module.exports = searchMessages;

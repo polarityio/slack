@@ -7,13 +7,7 @@ const {
   trim,
   filter,
   get,
-  getOr,
   size,
-  negate,
-  isEqual,
-  some,
-  toLower,
-  eq,
   uniqBy
 } = require('lodash/fp');
 
@@ -36,15 +30,27 @@ const getLookupResults = async (entities, options) => {
   );
 
   const filteredEntities = filterOutInvalidEntities(entitiesPartition, options);
-  const channels = await getSlackChannels(options);
+
+  let channelsToSendTo = [];
+  if (options.allowSendingMessages) {
+    const allChannels = await getSlackChannels(options);
+    channelsToSendTo = options.messagingChannelNames
+      .split(',')
+      .map((channelName) =>
+        allChannels.find(
+          ({ name }) => name.toLowerCase() == channelName.trim().toLowerCase()
+        )
+      )
+      .filter((x) => x);
+  }
 
   const foundMessagesByEntity = options.allowSearchingMessages
-    ? await searchMessages(filteredEntities, channels, options)
+    ? await searchMessages(filteredEntities, options)
     : [];
 
   const lookupResults = createLookupResults(
     filteredEntities,
-    channels,
+    channelsToSendTo,
     foundMessagesByEntity,
     options
   );

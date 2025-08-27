@@ -28,6 +28,16 @@ const { sleep } = require('./dataTransformations');
 
 const USER_TOKEN_ROUTE_INCLUDES = ['search.messages'];
 
+// Workaround required because v1 of the utils library is expecting a request object
+// on the config
+config.request = {
+  cert: '',
+  key: '',
+  passphrase: '',
+  ca: '',
+  proxy: ''
+};
+
 const requestWithDefaults = createRequestWithDefaults({
   config,
   roundedSuccessStatusCodes: [200],
@@ -63,7 +73,10 @@ const requestWithDefaults = createRequestWithDefaults({
     try {
       const errorResponseBody = JSON.parse(error.description);
 
-      if (error.status === 429 || errorResponseBody.error === 'ratelimited') {
+      if (
+        (error.status === 429 || errorResponseBody.error === 'ratelimited') &&
+        requestOptions.retryOnLimit
+      ) {
         return await handleRetryAfterExceededRateLimit(error, requestOptions);
       }
       error.message = `${error.message} ${error.status ? `- (${error.status}) ` : ''}${
