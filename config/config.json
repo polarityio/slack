@@ -260,7 +260,7 @@
       "key": "addEntityToMessageByDefault",
       "name": "Add Entity Value to Message By Default",
       "description": "If checked, the entity value will be added to the Slack Messaging Box in the Overlay by Default. This option must be set to \"Lock and show option for all users\"",
-      "default": true,
+      "default": false,
       "type": "boolean",
       "userCanEdit": false,
       "adminOnly": false

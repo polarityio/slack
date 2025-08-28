@@ -6,12 +6,15 @@ polarity.export = PolarityComponent.extend({
   maxSimultaneousAvatarLookups: 5,
   messageValue: '',
   sendingMessage: false,
+  flashMessages: Ember.inject.service('flashMessages'),
   messagingToast: '',
   errorMessagingToast: '',
   selectedChannel: {},
   foundMessageSearchResultsOpen: false,
   loadingMoreMessages: false,
   channelsToSendTo: Ember.computed.alias('details.channelsToSendTo'),
+  errorTitle: '',
+  errorMessage: '',
   init() {
     this.set('avatars', {});
     this.set('selectedChannel', this.get('channelsToSendTo.0'));
@@ -26,6 +29,27 @@ polarity.export = PolarityComponent.extend({
     this._super(...arguments);
   },
   actions: {
+    retrySearch: function () {
+      this.set('runningSearch', true);
+      console.info('Running Search');
+      this.sendIntegrationMessage({
+        action: 'retryDoLookup',
+        data: {
+          entity: this.get('block.entity')
+        }
+      })
+        .then((lookupResult) => {
+          this.set('block.data', lookupResult.data);
+        })
+        .catch((err) => {
+          console.error('Error retrying search', JSON.stringify(err, null, 2));
+
+          this.flashMessage(err.detail ? err.detail : 'Error retrying search', 'danger');
+        })
+        .finally(() => {
+          this.set('runningSearch', false);
+        });
+    },
     toggleShowingFoundMessages: function () {
       this.toggleProperty('foundMessageSearchResultsOpen');
       if (this.get('block.userOptions.enableAvatars')) {
@@ -87,6 +111,7 @@ polarity.export = PolarityComponent.extend({
             'details.currentSearchResultsPage',
             this.get('details.totalNumberOfSearchResultPages')
           );
+          this.flashMessage('Error fetching messages', 'danger');
         })
         .finally(() => {
           this.set('loadingMoreMessages', false);
@@ -111,17 +136,16 @@ polarity.export = PolarityComponent.extend({
           this.set('messagingToast', 'Successfully Sent Message');
         })
         .catch((err) => {
-          this.set(
-            'errorMessagingToast',
+          let message =
             'Failed to Send Message: ' +
               (err &&
                 (err.detail || err.err || err.message || err.title || err.description)) ||
-              'Unknown Reason'
-          );
+            'Unknown Reason';
+          this.set('errorMessagingToast', message);
+          this.flashMessage(message, 'danger');
         })
         .finally(() => {
           this.set('sendingMessage', false);
-
           setTimeout(() => {
             if (!this.isDestroyed) {
               this.set('messagingToast', '');
@@ -138,8 +162,8 @@ polarity.export = PolarityComponent.extend({
     }, []);
     return [...new Set(userIds)];
   }),
-  loadAvatars: function () {
-    if (!this.get('block.userOptions.enableAvatars')) {
+  loadAvatars: async function () {
+    if (!this.get('block.userOptions.enableAvatars') || this.get('loadingAvatarsFailed')) {
       return;
     }
 
@@ -180,20 +204,52 @@ polarity.export = PolarityComponent.extend({
             userIds: userIdChunk
           }
         };
+
         const avatars = await this.sendIntegrationMessage(payload);
+
         allAvatars = Object.assign({}, allAvatars, avatars);
         this.set('avatars', allAvatars);
 
         userIdChunk.forEach((userId) => {
           this.get('details.foundMessagesFromSearch').forEach((message, index) => {
             if (message.userId === userId) {
-              this.set(`details.foundMessagesFromSearch.${index}.__isLoadingAvatar`, false);
+              this.set(
+                `details.foundMessagesFromSearch.${index}.__isLoadingAvatar`,
+                false
+              );
             }
           });
         });
       }
     };
 
-    fetchChunksSequentially.call(this, userIdChunks);
+    try {
+      await fetchChunksSequentially.call(this, userIdChunks);
+    } catch (error) {
+      this.flashMessage(error.detail ? error.detail : 'Error loading avatars', 'danger');
+      this.get('details.foundMessagesFromSearch').forEach((message, index) => {
+        this.set(`details.foundMessagesFromSearch.${index}.__isLoadingAvatar`, false);
+      });
+      this.set('loadingAvatarsFailed', true);
+    }
+  },
+  /**
+   * Flash a message on the screen for a specific issue
+   * @param message
+   * @param type 'info', 'danger', or 'success'
+   */
+  flashMessage(message, type = 'info', duration = 3000) {
+    console.error('Flashing message: ', message);
+    this.flashMessages.add({
+      message: `${this.block.acronym}: ${message}`,
+      type: `unv-${type}`,
+      icon:
+        type === 'success'
+          ? 'check-circle'
+          : type === 'danger'
+          ? 'exclamation-circle'
+          : 'info-circle',
+      timeout: duration
+    });
   }
 });

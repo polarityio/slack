@@ -1,6 +1,6 @@
 const { get, map, flow, filter, toInteger, size, multiply, split } = require('lodash/fp');
 const { DateTime, Duration } = require('luxon');
-
+const { RetryRequestError } = require('./errors');
 const { requestWithDefaults } = require('./request');
 
 const searchMessages = async (entities, options, currentSearchResultsPage = 1) =>
@@ -14,22 +14,40 @@ const searchMessages = async (entities, options, currentSearchResultsPage = 1) =
         .filter((channel) => !!channel);
 
       const query = createQuery(entity, channelsToSearch, options);
-      const foundMessages = get(
-        'body.messages',
-        await requestWithDefaults({
-          url: `${options.url}/search.messages`,
-          method: 'GET',
-          qs: {
-            query,
-            count: 100,
-            page: currentSearchResultsPage,
-            sort,
-            sort_dir
-          },
-          options,
-          retryOnLimit: true
-        })
-      );
+      let foundMessages;
+      try {
+        foundMessages = get(
+          'body.messages',
+          await requestWithDefaults({
+            url: `${options.url}/search.messages`,
+            method: 'GET',
+            qs: {
+              query,
+              count: 100,
+              page: currentSearchResultsPage,
+              sort,
+              sort_dir
+            },
+            options,
+            retryOnLimit: true
+          })
+        );
+      } catch (error) {
+        // check to see if we hit a search limit due to API rate limits
+        // If so, we want to display a button to the user to manually retry the search
+        if (error instanceof RetryRequestError) {
+          return {
+            entity,
+            foundMessagesFromSearch: [],
+            totalNumberOfSearchResultPages: 0,
+            currentSearchResultsPage: 0,
+            totalCount: 0,
+            apiLimitReached: true
+          };
+        } else {
+          throw error;
+        }
+      }
 
       const totalNumberOfSearchResultPages = flow(get('pagination.page_count'))(
         foundMessages
@@ -80,7 +98,8 @@ const searchMessages = async (entities, options, currentSearchResultsPage = 1) =
         foundMessagesFromSearch,
         totalNumberOfSearchResultPages,
         currentSearchResultsPage,
-        totalCount
+        totalCount,
+        apiLimitReached: false
       };
     }, entities)
   );

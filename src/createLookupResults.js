@@ -14,14 +14,44 @@ const createLookupResults = (
     const {
       foundMessagesFromSearch,
       totalNumberOfSearchResultPages,
-      currentSearchResultsPage
+      currentSearchResultsPage,
+      apiLimitReached
     } = find(flow(get('entity.value'), eq(entity.value)), foundMessagesByEntity) || {
       foundMessagesFromSearch: [],
       totalNumberOfSearchResultPages: 0,
       currentSearchResultsPage: 0
     };
 
-    Logger.info({ foundMessagesFromSearch, options }, 'createLookupResults');
+    if (options.promptBeforeSearching) {
+      return {
+        entity,
+        data: {
+          summary: ['Run Slack Search'],
+          details: {
+            channelsToSendTo,
+            promptBeforeSearching: true,
+            searchPermissions: options.searchPermissions.value,
+            searchChannels: options.slackChannelsToSearch
+              .split(',')
+              .map((channel) => channel.trim())
+              .filter((channel) => !!channel)
+          }
+        }
+      };
+    }
+
+    if (apiLimitReached) {
+      return {
+        entity,
+        data: {
+          summary: ['API Limit Reached'],
+          details: {
+            channelsToSendTo,
+            apiLimitReached: true
+          }
+        }
+      };
+    }
 
     const lookupResult = {
       entity,
@@ -30,7 +60,11 @@ const createLookupResults = (
         (options.allowSendingMessages && every(size, [channelsToSendTo]))
           ? {
               summary: []
-                .concat(options.allowSendingMessages && size(channelsToSendTo) ? 'Message Channels' : [])
+                .concat(
+                  options.allowSendingMessages && size(channelsToSendTo)
+                    ? 'Message Channels'
+                    : []
+                )
                 .concat(size(foundMessagesFromSearch) ? 'Search Results' : []),
               details: {
                 channelsToSendTo,

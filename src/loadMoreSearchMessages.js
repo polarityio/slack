@@ -19,7 +19,7 @@ const loadMoreSearchMessages = async (
     }
   ] = await searchMessages([entity], options, currentSearchResultsPage + 1);
 
-  Logger.info({ foundMessagesFromSearch, entityValue: entity.value, currentSearchResultsPage, totalCount }, 'loadMoreSearchMessages');
+  Logger.trace({ foundMessagesFromSearch, entityValue: entity.value, currentSearchResultsPage, totalCount }, 'loadMoreSearchMessages');
   
   return {
     foundMessagesFromSearch,

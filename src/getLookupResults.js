@@ -44,9 +44,12 @@ const getLookupResults = async (entities, options) => {
       .filter((x) => x);
   }
 
-  const foundMessagesByEntity = options.allowSearchingMessages
-    ? await searchMessages(filteredEntities, options)
-    : [];
+  let foundMessagesByEntity = [];
+  if (!options.promptBeforeSearching) {
+    foundMessagesByEntity = options.allowSearchingMessages
+      ? await searchMessages(filteredEntities, options)
+      : [];
+  }
 
   const lookupResults = createLookupResults(
     filteredEntities,

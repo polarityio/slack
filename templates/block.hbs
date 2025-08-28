@@ -1,3 +1,16 @@
+{{#if details.apiLimitReached}}
+  <button type="button" class="btn btn-polarity btn-sm retry-btn" {{action "retrySearch"}}>
+    {{#if runningSearch}}
+      {{fa-icon icon="spinner-third" fixedWidth=true spin=true}}
+    {{else}}
+      Retry Search
+    {{/if}}
+  </button>
+  <div class="mt-1">
+    <span class="p-footnote">The Slack API search limit was reached. You can retry your search by pressing the "Retry Search" button.</span>
+  </div>
+{{/if}}
+
 {{#if (and channelsToSendTo.length block.userOptions.allowSendingMessages) }}
 <div class='messaging'>
   <div class='channel-select-container'>
@@ -25,7 +38,7 @@
     class='message-box'
     change=(action (mut messageValue) value='target.value')
     rows=2
-    placeholder=(concat 'Message ' selectedChannel.name)
+    placeholder=(concat 'Message #' selectedChannel.name)
     value=messageValue
     disabled=sendingMessage
   }}
@@ -60,6 +73,47 @@
     {{/if}}
   </div>
 </div>
+{{/if}}
+
+{{#if details.promptBeforeSearching}}
+  <div class="prompt-search-container">
+    <button type="button" class="btn btn-polarity btn-sm retry-btn" {{action "retrySearch"}}>
+      {{#if runningSearch}}
+        {{fa-icon icon="spinner-third" fixedWidth=true spin=true}}
+      {{else}}
+        Search Slack
+      {{/if}}
+    </button>
+    <div class="mt-1">
+      <span class="p-footnote">
+        {{#if (gt details.searchChannels.length 0)}}
+          <div>
+            Search specific Slack channels for <strong>{{block.entity.value}}</strong>
+          </div>
+          <div>
+            <span class="p-action" {{action (toggle "viewSearchChannels" this)}}>
+              View Searched Channels {{fa-icon icon=(if viewSearchChannels "chevron-up" "chevron-down") fixedWidth=true}}
+            </span>
+            {{#if viewSearchChannels}}
+              <div class="mt-1">
+                {{#each details.searchChannels as | channelName |}}
+                  <span class="channel-tag">#{{channelName}}</span>
+                {{/each}}
+              </div>
+            {{/if}}
+          </div>
+        {{else}}
+          {{#if (eq details.searchPermissions "public")}}
+            Search public Slack channels for <strong>{{block.entity.value}}</strong>
+          {{else if (eq details.searchPermissions "private")}}
+            Search private Slack channels for <strong>{{block.entity.value}}</strong>
+          {{else if (eq details.searchPermissions "publicPrivate")}}
+            Search public and private Slack channels for <strong>{{block.entity.value}}</strong>
+          {{/if}}
+        {{/if}}
+      </span>
+    </div>
+  </div>
 {{/if}}
 
 {{#if details.foundMessagesFromSearch.length}}
@@ -109,7 +163,7 @@
                     <div class="blank-avatar">
                       {{fa-icon icon="user" fixedWidth=true class="blank-avatar-icon"}}
                       {{#if foundMessage.__isLoadingAvatar}}
-                        {{fa-icon icon="circle" fixedWidth=true class="avatar-loading-icon"}}
+                        {{fa-icon icon="hourglass" fixedWidth=true class="avatar-loading-icon"}}
                       {{/if}}
                     </div>
                   {{/if}}
