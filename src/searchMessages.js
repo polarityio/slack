@@ -28,8 +28,7 @@ const searchMessages = async (entities, options, currentSearchResultsPage = 1) =
               sort,
               sort_dir
             },
-            options,
-            retryOnLimit: true
+            options
           })
         );
       } catch (error) {

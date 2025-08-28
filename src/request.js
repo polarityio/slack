@@ -57,14 +57,8 @@ const requestWithDefaults = createRequestWithDefaults({
     const Logger = getLogger();
     const requestIsNotOk = !get('body.ok', response);
 
+    // This line for testing
     //response.statusCode = 429;
-    // if (requestIsNotOk || response.statusCode >= 400) {
-    //   throw new ApiRequestError('Request Error', {
-    //     statusCode: response.statusCode,
-    //     body: response.body,
-    //     headers: response.headers
-    //   });
-    // }
     
     Logger.trace({response}, 'Post Process Request Response');
 
@@ -82,7 +76,7 @@ const requestWithDefaults = createRequestWithDefaults({
   postprocessRequestFailure: async (error, requestOptions) => {
     const errorResponseBody = JSON.parse(error.description);
     
-    if (error.status === 429 && requestOptions.retryOnLimit) {
+    if (error.status === 429) {
       throw new RetryRequestError('ratelimited', {
         cause: error,
         requestOptions

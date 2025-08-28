@@ -4,6 +4,7 @@ const async = require('async');
 const {
   logging: { getLogger }
 } = require('polarity-integration-utils');
+const { RetryRequestError } = require('./errors');
 
 const profilePictureCache = new NodeCache({
   stdTTL: 24 * 60 * 60 //Cache profile picture for 24 hours
@@ -58,17 +59,14 @@ async function getUserAvatars({ userIds }, options) {
 }
 
 async function fetchSingleAvatar(userId, options) {
+  const Logger = getLogger();
   const requestOptions = {
     url: `${options.url}/users.profile.get`,
     method: 'GET',
     qs: {
       user: userId
     },
-    options,
-    // Since this is a non-critical endpoint to use, we don't want to retry the
-    // lookup if we've hit an API limit as that could potentially cause other
-    // more important lookups to take longer.
-    retryOnLimit: false
+    options
   };
 
   try {
@@ -80,7 +78,8 @@ async function fetchSingleAvatar(userId, options) {
       apiLimitReached: false
     };
   } catch (error) {
-    if (error.status === 429) {
+    Logger.error({error}, 'Get Avatar Error');
+    if (error instanceof RetryRequestError) {
       // hit a request limit so we just return
       return {
         avatarUrl: null,

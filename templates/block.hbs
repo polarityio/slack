@@ -212,6 +212,11 @@
               ... Load More
             {{/if}}
           </a></div>
+        {{#if apiLimitReachedOnMoreMessages}}
+          <div class="load-more-api-limit-container">
+            {{fa-icon icon="info-circle" fixedWidth=true}} Slack API Limit reached.  Try again in a minute.
+          </div>
+        {{/if}}
       {{/if}}
     </div>
   {{else}}

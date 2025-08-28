@@ -72,7 +72,8 @@ polarity.export = PolarityComponent.extend({
     loadMoreSearchMessages: function () {
       if (this.get('loadingMoreMessages')) return;
       this.set('loadingMoreMessages', true);
-
+      this.set('apiLimitReachedOnMoreMessages', false);
+      
       this.sendIntegrationMessage({
         action: 'loadMoreSearchMessages',
         data: {
@@ -85,23 +86,28 @@ polarity.export = PolarityComponent.extend({
           ({
             foundMessagesFromSearch,
             currentSearchResultsPage,
-            totalNumberOfSearchResultPages
+            totalNumberOfSearchResultPages,
+            apiLimitReached
           }) => {
-            this.set(
-              'details.foundMessagesFromSearch',
-              this.get('details.foundMessagesFromSearch').concat(foundMessagesFromSearch)
-            );
-            this.set('details.currentSearchResultsPage', currentSearchResultsPage);
-            this.set(
-              'details.totalNumberOfSearchResultPages',
-              totalNumberOfSearchResultPages
-            );
-            if (foundMessagesFromSearch.length === 0) {
-              // no more results
-              this.set('hasMoreResults', false);
-            }
-            if (this.get('block.userOptions.enableAvatars')) {
-              this.loadAvatars();
+            if(apiLimitReached){
+              this.set('apiLimitReachedOnMoreMessages', true);
+            } else {
+              this.set(
+                'details.foundMessagesFromSearch',
+                this.get('details.foundMessagesFromSearch').concat(foundMessagesFromSearch)
+              );
+              this.set('details.currentSearchResultsPage', currentSearchResultsPage);
+              this.set(
+                'details.totalNumberOfSearchResultPages',
+                totalNumberOfSearchResultPages
+              );
+              if (foundMessagesFromSearch.length === 0) {
+                // no more results
+                this.set('hasMoreResults', false);
+              }
+              if (this.get('block.userOptions.enableAvatars')) {
+                this.loadAvatars();
+              } 
             }
           }
         )
@@ -163,7 +169,10 @@ polarity.export = PolarityComponent.extend({
     return [...new Set(userIds)];
   }),
   loadAvatars: async function () {
-    if (!this.get('block.userOptions.enableAvatars') || this.get('loadingAvatarsFailed')) {
+    if (
+      !this.get('block.userOptions.enableAvatars') ||
+      this.get('loadingAvatarsFailed')
+    ) {
       return;
     }
 
@@ -226,7 +235,11 @@ polarity.export = PolarityComponent.extend({
     try {
       await fetchChunksSequentially.call(this, userIdChunks);
     } catch (error) {
-      this.flashMessage(error.detail ? error.detail : 'Error loading avatars', 'danger');
+      console.error('Error loading avatars', error);
+      this.flashMessage(
+        error.detail ? `Error Loading Avatars: ${error.detail}` : 'Error loading avatars',
+        'danger'
+      );
       this.get('details.foundMessagesFromSearch').forEach((message, index) => {
         this.set(`details.foundMessagesFromSearch.${index}.__isLoadingAvatar`, false);
       });
