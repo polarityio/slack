@@ -57,7 +57,7 @@ const validateOptions = (options, callback) => {
     .concat(urlValidationErrors)
     .concat(noChannelNamesError)
     .concat(integrationDoesNothingError)
-    .concat(ignoreEntityTypesTrueWithoutCustomTypeOnError);
+    .concat(ignoreEntityTypesTrueWithoutCustomTypeOnError)
 
   callback(null, errors);
 };

@@ -55,16 +55,13 @@ To obtain the required User and Bot authentication tokens required by the Polari
         user:
           - search:read
         bot:
+          - users:read
+          - users.profile:read
           - channels:read
           - groups:read
-          - im:read
-          - mpim:read
           - chat:write
           - chat:write.customize
           - chat:write.public
-          - users:read
-          - users.profile:read
-
     settings:
       org_deploy_enabled: false
       socket_mode_enabled: false
@@ -112,14 +109,15 @@ To obtain the required User and Bot authentication tokens required by the Polari
 The Polarity Slack integration supports searching Slack as well as allowing users to send messages from the Overlay Window. The following permissions are required for full functionality:
 
 
-| Permission                    | Scope | Use | Description                                                                   |
-|-------------------------------|--------|--------|-------------------------------------------------------------------------------|
-| search:read                   | user | search | Searching Slack messages                                                      |
-| channels:read<br/>groups:read | bot | search | Listing channels in Slack (in the Slack API groups refer to private channels) 
-| users:read                    | bot | search | Listing users in Slack |
-| chat: write | bot | send |   Sending messages to channels |
-| chat:write.public | bot | send | Optionally required for sending messages to public channels the bot is not explicitly invited into. |
-| chat:write.customize | bot | send | Optionally required for customizing name of Polarity bot when sending messages |
+| Permission                   | Scope | Use    | Purpose |
+|------------------------------|--------|--------|-----------------------------------------------------------------------------------------------------|
+| search:read                  | user | search | Searching Slack messages                                                                            | 
+| users:read                   | bot | search | Listing users in Slack                                                                              |
+| users.profile:read           | bot | search | Displaying user avatars
+| channels:read<br/>groups:read | bot | send   | Listing channels in Slack (in the Slack API groups refer to private channels)
+| chat:write                   | bot | send   | Sending messages to channels                                                                        |
+| chat:write.public            | bot | send   | Optionally required for sending messages to public channels the bot is not explicitly invited into. |
+| chat:write.customize         | bot | send   | Optionally required for customizing name of Polarity bot when sending messages                      |
 
 Permissions marked as “search” are required if you want the integration to be able to search Slack channels. Permissions marked as “send”, are required if you want the integration to be able to send messages to a Slack channel.
 

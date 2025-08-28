@@ -79,7 +79,7 @@
     {
       "key": "userToken",
       "name": "User Token",
-      "description": "The API User Token associated with the your Polarity Slack App. Your User Token should start with \"xoxp-###...\". Optional if you don't wish to search and uncheck \"Allow Searching Slack Messages\"",
+      "description": "The API User Token associated with the your Polarity Slack App. Your User Token should start with \"xoxp-###...\". Optional if you don't wish to search and uncheck \"Allow Searching Slack Messages\".  It is a best practice to generate the user token with a user that has limited channel access.",
       "default": "",
       "type": "password",
       "userCanEdit": false,
@@ -97,9 +97,99 @@
     {
       "key": "allowSearchingMessages",
       "name": "Allow Searching Slack Messages",
-      "description": "If checked, the integration will search and return Slack messages that match enabled entity values.",
+      "description": "If checked, the integration will search and return Slack messages that match enabled entity values.  Slack's API limits searching to 20 searches per minute.",
       "default": true,
       "type": "boolean",
+      "userCanEdit": false,
+      "adminOnly": true
+    },
+    {
+      "key": "promptBeforeSearching",
+      "name": "Prompt User Before Searching",
+      "description": "If checked, the integration will only search messages when explicitly prompted by the user by clicking on the \"Search Slack\" button within the integration results.  Slack's API limits searching to 20 searches per minute.",
+      "default": false,
+      "type": "boolean",
+      "userCanEdit": false,
+      "adminOnly": true
+    },
+    {
+      "key": "searchPermissions",
+      "name": "Message Search Permissions",
+      "description": "Select what types of channels to search.  If you'd like to specify specific channels, use the \"Channels to Search\" option below.",
+      "default": {
+        "value": "public",
+        "display": "Public Channels Only"
+      },
+      "type": "select",
+      "options": [
+        {
+          "value": "public",
+          "display": "Public Channels Only"
+        },
+        {
+          "value": "publicPrivate",
+          "display": "Public & Private Channels (No DMs or Group Messages)"
+        },
+        {
+          "value": "private",
+          "display": "Private Channels Only (No DMs or Group Messages)"
+        }
+      ],
+      "userCanEdit": false,
+      "adminOnly": true
+    },
+    {
+      "key": "slackChannelsToSearch",
+      "name": "Channels to Search",
+      "description": "Comma delimited list of Slack channel names you would like the integration to search. If channel names are provided then only the specified channels will be searched regardless of the \"Message Search Permissions\" set.  Public and Private channel names can be set but the configured \"User Token\" must have access to the specified channels to search.",
+      "default": "",
+      "type": "text",
+      "userCanEdit": false,
+      "adminOnly": true
+    },
+    {
+      "key": "searchWindow",
+      "name": "Message Search Window",
+      "description": "How far back from now to search for messages (defaults to 1 year)",
+      "default": {
+        "value": "P1Y",
+        "display": "1 year"
+      },
+      "type": "select",
+      "options": [
+        {
+          "value": "P0D",
+          "display": "All time"
+        },
+        {
+          "value": "P5Y",
+          "display": "5 years"
+        },
+        {
+          "value": "P3Y",
+          "display": "3 years"
+        },
+        {
+          "value": "P1Y",
+          "display": "1 year"
+        },
+        {
+          "value": "P6M",
+          "display": "6 months"
+        },
+        {
+          "value": "P3M",
+          "display": "3 months"
+        },
+        {
+          "value": "P1M",
+          "display": "1 month"
+        },
+        {
+          "value": "P1W",
+          "display": "1 week"
+        }
+      ],
       "userCanEdit": false,
       "adminOnly": true
     },
@@ -129,6 +219,15 @@
       "multiple": false,
       "userCanEdit": false,
       "adminOnly": true
+    },
+    {
+      "key": "enableAvatars",
+      "name": "Enable Displaying User Avatars",
+      "description": "If checked, the integration will display user avatars. This option must be set to \"Lock and show option for all users\".",
+      "default": true,
+      "type": "boolean",
+      "userCanEdit": false,
+      "adminOnly": false
     },
     {
       "key": "allowSendingMessages",
@@ -161,7 +260,7 @@
       "key": "addEntityToMessageByDefault",
       "name": "Add Entity Value to Message By Default",
       "description": "If checked, the entity value will be added to the Slack Messaging Box in the Overlay by Default. This option must be set to \"Lock and show option for all users\"",
-      "default": true,
+      "default": false,
       "type": "boolean",
       "userCanEdit": false,
       "adminOnly": false
