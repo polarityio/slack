@@ -2,8 +2,6 @@
 
 The Polarity Slack Integration allows you to ***Send Messages to Channels in Slack*** directly from the Overlay, and ***Search Entities in Slack Channel Messages*** for all entity types.
 
-> ***NOTE:*** If you are repeatedly getting `Rate Limit Exceeded - You might have too many Slack Channels or too many messages in the channels.` you might need reduce the channels your credentials have access to search in the Slack Credentials dashboard.
-
 <div style="display:flex; justify-content:center; align-items: flex-start;">
   <img width="300" alt="Integration Example Search" src="./assets/int-example-search.png">
   <img width="300" alt="Integration Example Message Channels" src="./assets/int-example-message-channels.png">
@@ -137,20 +135,19 @@ For more information on the `search.messages` API endpoint see: https://api.slac
 > Since the search:read permission is a user scope, when running searches within Slack, the integration will have access to the same channels as the user that authorized the application.
 
 #### Bot Token Scopes
+
 In addition to the general search capability provided by the user token `search:read` permission, the integration requires the ability to list channels in a Slack team. This capability uses the `conversations.list` endpoint and requires the following bot token scopes:
-
-```
-channels:read
-groups:read
-```
-For more information on the `conversations.list` API endpoint see https://api.slack.com/methods/conversations.list
-
-In addition to listing channels, the integration needs to be able to list users and view user profile information (e.g., to display the user avatar). The users.list API endpoint is used for this and requires the following bot token scope:
 
 ```
 users:read
 ```
 For more information on the `users.list` API endpoint see https://api.slack.com/methods/users.list
+
+When searching messages the integration will display user avatar images using the `users.profile.get` API endpoint.  This endpoint requires the `users.profile:read` scope.  
+
+```
+users.profile:read   
+```
 
 ### Sending Slack Messages
 
@@ -180,12 +177,24 @@ chat:write.customize
 
 This permission is required if you want to change the name that the Polarity bot posts as. See the "Slack Messaging Display Name" option.
 
+To be able to match a channel name to a channel id the integration will also need the `channels:read` and `groups:read` scopes to get access to the `conversations.list` endpoint.
+
+```
+channels:read
+groups:read
+```
+
+For more information on the `conversations.list` API endpoint see https://api.slack.com/methods/conversations.list
 
 ## Private Channels
 
 ###  Searching Private Channels
 
-To search private channels, make sure the user that clicked `Allow` in `Step 9` of the "Setting up a Polarity App in Slack" guide is in that private channel you want to search.
+To search private channels, make sure the user that clicked `Allow` in `Step 9` of the "Setting up a Polarity App in Slack" guide is in that private channel you want to search.  
+
+**Important** When generating the User Token for the integration, the generated token will have access to **ALL** messages that the creating user has.  This include public and private channels as well as direct messages (DMs) and  group DMs (MPIMs). The Polarity Slack integration will filter out results based on the "Manage Search Permissions" option but the token itself still has access. 
+
+As a result, it is a best practice to generate the User Token using an account that only has access to messages you wish to make searchable.
 
 ### Sending Messages to Private Channels 
 
@@ -197,16 +206,44 @@ To allow messaging in private channels, you must first send a `@Polarity` messag
 The URL of the Slack API you would like to connect to.  
 
 ### User Token
-The API User Token associated with your Polarity Slack App. Your User Token should start with "xoxp-###...". Optional if you don't wish to search.
+The API User Token associated with the Polarity Slack App. Your User Token should start with "xoxp-###...". Optional if you don't wish to search and uncheck "Allow Searching Slack Messages". It is a best practice to generate the user token with a user that has limited channel access.
 
 ### Bot Token
 The API Bot Token associated with your Polarity Slack App. Your User Token should start with "xoxb-###...". 
 
 ### Allow Searching Slack Messages
-If checked, the integration will search and return Slack messages that match enabled entity values.
+If checked, the integration will search and return Slack messages that match enabled entity values. Slack's API limits searching to 20 searches per minute.
+
+> If you run into Rate Limit errors you can reduce usage of the Slack API by enabling the "Prompt User Before Searching" option. 
+
+### Prompt User Before Searching
+
+If checked, the integration will only search messages when explicitly prompted by the user by clicking on the "Search Slack" button within the integration results. Slack's API limits searching to 20 searches per minute.
+
+### Message Search Permissions
+
+Select what types of channels to search. If you'd like to specify specific channels, use the "Channels to Search" option below.  Options are:
+
+* Public Channels Only
+* Public & Private Channels (No DMs or Group Messages will be returned)
+* Private Channels Only (No DMs or Group Messages will be returned)
+
+**Important**: If Private Channel results are enabled, the integration will search all private channels the configured User Token has access to.
+
+### Channels to Search
+
+Comma-delimited list of Slack channel names you would like the integration to search. If channel names are provided then only the specified channels will be searched regardless of the "Message Search Permissions" set. Public and Private channel names can be set but the configured "User Token" must have access to the specified channels to search.
+
+### Message Search Window
+
+How far back from now to search for messages (defaults to 1 year).
 
 ### Sort Message Search Results By
 Return the search results in a particular order.  Options are `Best Search Match First`, `Most Recent Search Match First`, and `Oldest Search Match First`
+
+### Enable Displaying User Avatars
+
+If checked, the integration will display user avatars. This option must be set to "Lock and show option for all users".
 
 ### Allow Sending Slack Messages
 If checked, a prompt will show for every entity searched, regardless of Search Results, allowing you to send a message to any Channels listed below.
@@ -229,7 +266,6 @@ If checked, the entity value will be added to the Slack Messaging Box in the Ove
 ## Installation Instructions
 
 Installation instructions for integrations are provided on the [PolarityIO GitHub Page](https://polarityio.github.io/).
-
 
 ## Polarity
 

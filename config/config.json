@@ -79,7 +79,7 @@
     {
       "key": "userToken",
       "name": "User Token",
-      "description": "The API User Token associated with the your Polarity Slack App. Your User Token should start with \"xoxp-###...\". Optional if you don't wish to search and uncheck \"Allow Searching Slack Messages\".  It is a best practice to generate the user token with a user that has limited channel access.",
+      "description": "The API User Token associated with the Polarity Slack App. Your User Token should start with \"xoxp-###...\". Optional if you don't wish to search and uncheck \"Allow Searching Slack Messages\".  It is a best practice to generate the user token with a user that has limited channel access.",
       "default": "",
       "type": "password",
       "userCanEdit": false,
@@ -88,7 +88,7 @@
     {
       "key": "botToken",
       "name": "Bot Token",
-      "description": "The API Bot Token associated with the your Polarity Slack App. Your User Token should start with \"xoxb-###...\"",
+      "description": "The API Bot Token associated with the Polarity Slack App. Your User Token should start with \"xoxb-###...\"",
       "default": "",
       "type": "password",
       "userCanEdit": false,
@@ -141,7 +141,7 @@
     {
       "key": "slackChannelsToSearch",
       "name": "Channels to Search",
-      "description": "Comma delimited list of Slack channel names you would like the integration to search. If channel names are provided then only the specified channels will be searched regardless of the \"Message Search Permissions\" set.  Public and Private channel names can be set but the configured \"User Token\" must have access to the specified channels to search.",
+      "description": "Comma-delimited list of Slack channel names you would like the integration to search. If channel names are provided then only the specified channels will be searched regardless of the \"Message Search Permissions\" set.  Public and Private channel names can be set but the configured \"User Token\" must have access to the specified channels to search.",
       "default": "",
       "type": "text",
       "userCanEdit": false,
@@ -150,7 +150,7 @@
     {
       "key": "searchWindow",
       "name": "Message Search Window",
-      "description": "How far back from now to search for messages (defaults to 1 year)",
+      "description": "How far back from now to search for messages (defaults to 1 year).",
       "default": {
         "value": "P1Y",
         "display": "1 year"
