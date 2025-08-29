@@ -1,166 +1,241 @@
-<div class='slack-integration'>
-  {{#if (and availableChannelsToMessage.length block.userOptions.allowSendingMessages) }}
-    <div class='messaging'>
-      <div class='channel-select-container'>
-        <div class='channel-select-title'>
-          {{#if selectedChannel.is_private}}
-            {{fa-icon 'lock' class='icon channel-icon' size='md' fixedWidth=true}}
-          {{else}}
-            {{fa-icon 'hashtag' class='icon channel-icon' size='md' fixedWidth=true}}
-          {{/if}}
-          <select
-            class='channel-dropdown'
-            onchange={{action 'selectChannel' value='target.value'}}
-          >
-            {{#each availableChannelsToMessage as |channel|}}
-              <option
-                class='channel-option'
-                value={{channel.id}}
-                selected={{eq channel.id selectedChannel.id}}
-              >{{channel.name}}</option>
-            {{/each}}
-          </select>
-        </div>
-      </div>
-      {{textarea
-        class='message-box'
-        change=(action (mut messageValue) value='target.value')
-        rows=2
-        placeholder=(concat 'Message ' selectedChannel.name)
-        value=messageValue
-        disabled=sendingMessage
-      }}
-      <div class='send-button-and-messages'>
-        <button
-          {{action 'sendMessage'}}
-          class='p-btn btn btn-light send-button
-            {{if (or sendingMessage (not messageValue)) "disabled"}}'
-          disabled={{or sendingMessage (not messageValue)}}
-        >
-          {{#if sendingMessage}}
-            {{fa-icon
-              'spinner-third'
-              class='icon loading-icon'
-              size='md'
-              fixedWidth=true
-              spin=true
-              alt='Send Message'
-            }}
-          {{/if}}
-          {{fa-icon 'paper-plane' class='icon send-icon' size='md' fixedWidth=true}}
-        </button>
-        {{#if messagingToast}}
-          <div class='alert alert-info'>
-            {{messagingToast}}
-          </div>
-        {{/if}}
-        {{#if errorMessagingToast}}
-          <div class='alert alert-danger'>
-            {{errorMessagingToast}}
-          </div>
-        {{/if}}
-      </div>
-    </div>
-  {{/if}}
+{{#if details.apiLimitReached}}
+  <button type="button" class="btn btn-polarity btn-sm retry-btn" {{action "retrySearch"}}>
+    {{#if runningSearch}}
+      {{fa-icon icon="spinner-third" fixedWidth=true spin=true}}
+    {{else}}
+      Retry Search
+    {{/if}}
+  </button>
+  <div class="mt-1">
+    <span class="p-footnote">The Slack API search limit was reached. You can retry your search by pressing the "Retry Search" button.</span>
+  </div>
+{{/if}}
 
-  {{#if details.foundMessagesFromSearch.length}}
-    <div class='search-results'>
-      {{#if foundMessageSearchResultsOpen}}
-        <div class='expandable-title-container open'>
-          <a
-            href='#'
-            class='expandable-title'
-            {{on 'click' (action 'toggleShowingFoundMessages')}}
-          >
-            <span class='text'>Search results for "{{block.entity.value}}</span>"
-            {{fa-icon 'angle-up' class='icon search-result-chevron'}}
-          </a>
-        </div>
-        <div class='search-results-content'>
-          {{#each details.foundMessagesFromSearch as |foundMessage index|}}
-            <div class='search-result'>
+{{#if (and channelsToSendTo.length block.userOptions.allowSendingMessages) }}
+<div class='messaging'>
+  <div class='channel-select-container'>
+    <div class='channel-select-title'>
+      {{#if selectedChannel.is_private}}
+        {{fa-icon 'lock' class='icon channel-icon' size='md' fixedWidth=true}}
+      {{else}}
+        {{fa-icon 'hashtag' class='icon channel-icon' size='md' fixedWidth=true}}
+      {{/if}}
+      <select
+        class='channel-dropdown'
+        onchange={{action 'selectChannel' value='target.value'}}
+      >
+        {{#each channelsToSendTo as |channel|}}
+          <option
+            class='channel-option'
+            value={{channel.id}}
+            selected={{eq channel.id selectedChannel.id}}
+          >{{channel.name}}</option>
+        {{/each}}
+      </select>
+    </div>
+  </div>
+  {{textarea
+    class='message-box'
+    change=(action (mut messageValue) value='target.value')
+    rows=2
+    placeholder=(concat 'Message #' selectedChannel.name)
+    value=messageValue
+    disabled=sendingMessage
+  }}
+  <div class='send-button-and-messages'>
+    <button
+      {{action 'sendMessage'}}
+      class='p-btn btn btn-light send-button
+        {{if (or sendingMessage (not messageValue)) "disabled"}}'
+      disabled={{or sendingMessage (not messageValue)}}
+    >
+      {{#if sendingMessage}}
+        {{fa-icon
+          'spinner-third'
+          class='icon loading-icon'
+          size='md'
+          fixedWidth=true
+          spin=true
+          alt='Send Message'
+        }}
+      {{/if}}
+      {{fa-icon 'paper-plane' class='icon send-icon' size='md' fixedWidth=true}}
+    </button>
+    {{#if messagingToast}}
+      <div class='alert alert-info'>
+        {{messagingToast}}
+      </div>
+    {{/if}}
+    {{#if errorMessagingToast}}
+      <div class='alert alert-danger'>
+        {{errorMessagingToast}}
+      </div>
+    {{/if}}
+  </div>
+</div>
+{{/if}}
+
+{{#if details.promptBeforeSearching}}
+  <div class="prompt-search-container">
+    <button type="button" class="btn btn-polarity btn-sm retry-btn" {{action "retrySearch"}}>
+      {{#if runningSearch}}
+        {{fa-icon icon="spinner-third" fixedWidth=true spin=true}}
+      {{else}}
+        Search Slack
+      {{/if}}
+    </button>
+    <div class="mt-1">
+      <span class="p-footnote">
+        {{#if (gt details.searchChannels.length 0)}}
+          <div>
+            Search specific Slack channels for <strong>{{block.entity.value}}</strong>
+          </div>
+          <div>
+            <span class="p-action" {{action (toggle "viewSearchChannels" this)}}>
+              View Searched Channels {{fa-icon icon=(if viewSearchChannels "chevron-up" "chevron-down") fixedWidth=true}}
+            </span>
+            {{#if viewSearchChannels}}
+              <div class="mt-1">
+                {{#each details.searchChannels as | channelName |}}
+                  <span class="channel-tag">#{{channelName}}</span>
+                {{/each}}
+              </div>
+            {{/if}}
+          </div>
+        {{else}}
+          {{#if (eq details.searchPermissions "public")}}
+            Search public Slack channels for <strong>{{block.entity.value}}</strong>
+          {{else if (eq details.searchPermissions "private")}}
+            Search private Slack channels for <strong>{{block.entity.value}}</strong>
+          {{else if (eq details.searchPermissions "publicPrivate")}}
+            Search public and private Slack channels for <strong>{{block.entity.value}}</strong>
+          {{/if}}
+        {{/if}}
+      </span>
+    </div>
+  </div>
+{{/if}}
+
+{{#if details.foundMessagesFromSearch.length}}
+<div class='search-results'>
+  {{#if foundMessageSearchResultsOpen}}
+    <div class='expandable-title-container open'>
+      <a
+        href='#'
+        class='expandable-title'
+        {{on 'click' (action 'toggleShowingFoundMessages')}}
+      >
+        <span class='text'>Search results for "{{block.entity.value}}</span>"
+        {{fa-icon 'angle-up' class='icon search-result-chevron'}}
+      </a>
+    </div>
+    <div class='search-results-content'>
+      {{#each details.foundMessagesFromSearch as |foundMessage index|}}
+        <div class='search-result'>
+            <div class='channel-and-date'>
+              <span class='channel-name'>
+                {{#if foundMessage.channelIsPrivate}}
+                  {{fa-icon 'lock' class='icon channel-icon'}}
+                {{else}}
+                  {{fa-icon 'hashtag' class='icon channel-icon'}}
+                {{/if}}
+                {{foundMessage.channelName}}
+              </span>
+              <span class='date'>
+                &nbsp;- &nbsp;{{moment-format
+                  foundMessage.datetime
+                  'MMM DD, YYYY'
+                  timeZone=timezone
+                }}</span>
               <a href='{{foundMessage.messageLink}}'>
-                <div class='channel-and-date'>
-                  <span class='channel-name'>
-                    {{#if message.channelIsPrivate}}
-                      {{fa-icon 'lock' class='icon channel-icon'}}
-                    {{else}}
-                      {{fa-icon 'hashtag' class='icon channel-icon'}}
-                    {{/if}}
-                    {{foundMessage.channelName}}
-                  </span>
-                  <span class='date'>
-                    &nbsp;- &nbsp;{{moment-format
-                      foundMessage.datetime
-                      'MMM DD, YYYY'
-                      timeZone=timezone
-                    }}</span>
-                  <span class='view-in-channel'>View&nbsp;in&nbsp;channel</span>
-                </div>
-                <div class='message-and-picture'>
-                  {{#if foundMessage.profilePictureSrc}}
-                    <img
-                      class='profile-picture'
-                      src='{{foundMessage.profilePictureSrc}}'
-                    />
-                  {{/if}}
-                  <div class='message'>
-                    <div class='sender-and-time'>
-                      <span class='sender'>{{titleize foundMessage.username}}</span>
-                      <span class='time'>{{moment-format
-                          foundMessage.datetime
-                          'hh:mm A'
-                          timeZone=timezone
-                        }}</span>
-                    </div>
-                    <div class='message-content'>
-                      {{foundMessage.displayMessage}}
-                      {{#if foundMessage.shouldShowMoreMessage}}
-                        <div class='show-more'><a
-                            href='#'
-                            {{on 'click' (action 'showMoreOfMessage' index)}}
-                          >... Show More</a></div>
-                      {{/if}}
-                    </div>
-                  </div>
-                </div>
+                <span class='view-in-channel'>View in&nbsp;Slack {{fa-icon icon="external-link-square" fixedWidth=true class="external-link-icon"}}</span>
               </a>
             </div>
-          {{/each}}
-          {{#if
-            (lt details.currentSearchResultsPage details.totalNumberOfSearchResultPages)
-          }}
-            <div class='load-more {{if loadingMoreMessages "loading-more"}}'><a
-                href='#'
-                {{on 'click' (action 'loadMoreSearchMessages')}}
-              >
-                {{#if loadingMoreMessages}}
-                  {{fa-icon
-                    'spinner-third'
-                    class='icon loading-icon'
-                    size='lg'
-                    fixedWidth=true
-                    spin=true
-                    alt='Getting More Messages'
-                  }}
-                {{else}}
-                  ... Load More
-                {{/if}}
-              </a></div>
-          {{/if}}
+            <div class='message-and-picture'>
+              {{#if block.userOptions.enableAvatars}}
+                {{#let (get avatars foundMessage.userId) as | avatar |}}
+                  {{#if avatar.avatarUrl}}
+                    <img
+                      class="profile-picture"
+                      src="{{avatar.avatarUrl}}"
+                    />
+                  {{else if block.userOptions.enableAvatars}}
+                    <div class="blank-avatar">
+                      {{fa-icon icon="user" fixedWidth=true class="blank-avatar-icon"}}
+                      {{#if foundMessage.__isLoadingAvatar}}
+                        {{fa-icon icon="hourglass" fixedWidth=true class="avatar-loading-icon"}}
+                      {{/if}}
+                    </div>
+                  {{/if}}
+                {{/let}}
+              {{/if}}
+              <div class='message'>
+                <div class='sender-and-time'>
+                  <span class='sender'>{{titleize foundMessage.username}}</span>
+                  <span class='time'>{{moment-format
+                      foundMessage.datetime
+                      'hh:mm A'
+                      timeZone=timezone
+                    }}</span>
+                </div>
+                <div class='message-content'>
+                  {{foundMessage.displayMessage}}
+                  {{#if foundMessage.shouldShowMoreMessage}}
+                    <div class='show-more'><a
+                        href='#'
+                        {{on 'click' (action 'showMoreOfMessage' index)}}
+                      >... Show More</a></div>
+                  {{/if}}
+                </div>
+              </div>
+            </div>
+          
         </div>
-      {{else}}
-        <div class='expandable-title-container closed'>
-          <a
+      {{/each}}
+      {{#if
+        (and (lt details.currentSearchResultsPage details.totalNumberOfSearchResultPages) hasMoreResults)
+      }}
+        <div class='load-more {{if loadingMoreMessages "loading-more"}}'><a
             href='#'
-            class='expandable-title'
-            {{on 'click' (action 'toggleShowingFoundMessages')}}
+            {{on 'click' (action 'loadMoreSearchMessages')}}
           >
-            <span class='text'>Search results for "{{block.entity.value}}</span>"
-            {{fa-icon 'angle-down' class='icon search-result-chevron'}}
-          </a>
-        </div>
+            {{#if loadingMoreMessages}}
+              {{fa-icon
+                'spinner-third'
+                class='icon loading-icon'
+                size='lg'
+                fixedWidth=true
+                spin=true
+                alt='Getting More Messages'
+              }}
+            {{else}}
+              ... Load More
+            {{/if}}
+          </a></div>
+        {{#if apiLimitReachedOnMoreMessages}}
+          <div class="load-more-api-limit-container">
+            {{fa-icon icon="info-circle" fixedWidth=true}} Slack API Limit reached.  Try again in a minute.
+          </div>
+        {{/if}}
       {{/if}}
+    </div>
+  {{else}}
+    <div class='expandable-title-container closed'>
+      <a
+        href='#'
+        class='expandable-title'
+        {{on 'click' (action 'toggleShowingFoundMessages')}}
+      >
+        <span class='text'>Search results for "{{block.entity.value}}</span>"
+        {{fa-icon 'angle-down' class='icon search-result-chevron'}}
+      </a>
     </div>
   {{/if}}
 </div>
+{{/if}}
+
+{{#if (and block.userOptions.allowSendingMessages (eq channelsToSendTo.length 0))}}
+  <div class="p-footnote mt-1">
+    {{fa-icon icon="info-circle" fixedWidth=true}} Channels configured for sending do not exist or are not accessible.
+  </div>
+{{/if}}
