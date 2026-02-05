@@ -1,0 +1,51 @@
+{
+  "channelsToSendTo": [
+    {
+      "id": "C01234ABCDE",
+      "name": "security-alerts"
+    },
+    {
+      "id": "C56789FGHIJ",
+      "name": "threat-intel"
+    }
+  ],
+  "foundMessagesFromSearch": [
+    {
+      "messageLink": "https://polarity.slack.com/archives/C01234ABCDE/p1705432100123456",
+      "channelName": "security-alerts",
+      "datetime": "2024-01-16T14:35:00.000Z",
+      "channelIsPrivate": false,
+      "username": "john.doe",
+      "userId": "U0123ABCD",
+      "message": "Suspicious activity detected from IP 192.168.1.100. Multiple failed login attempts observed.",
+      "displayMessage": "Suspicious activity detected from IP 192.168.1.100. Multiple failed login attempts observed.",
+      "shouldShowMoreMessage": false
+    },
+    {
+      "messageLink": "https://polarity.slack.com/archives/C56789FGHIJ/p1705431800987654",
+      "channelName": "threat-intel",
+      "datetime": "2024-01-16T14:30:00.000Z",
+      "channelIsPrivate": true,
+      "username": "jane.smith",
+      "userId": "U4567EFGH",
+      "message": "New IOC reported: Domain malicious-site.com associated with recent phishing campaign. Recommend blocking at firewall level. Additional context: This domain was registered 3 days ago and has been linked to credential harvesting attempts targeting financial institutions.",
+      "displayMessage": "New IOC reported: Domain malicious-site.com associated with recent phishing campaign. Recommend blocking at firewall level....",
+      "shouldShowMoreMessage": true
+    },
+    {
+      "messageLink": "https://polarity.slack.com/archives/C01234ABCDE/p1705431200456789",
+      "channelName": "security-alerts",
+      "datetime": "2024-01-16T14:20:00.000Z",
+      "channelIsPrivate": false,
+      "username": "security-bot",
+      "userId": "U8910IJKL",
+      "message": "ALERT: Malware hash detected - MD5: d41d8cd98f00b204e9800998ecf8427e",
+      "displayMessage": "ALERT: Malware hash detected - MD5: d41d8cd98f00b204e9800998ecf8427e",
+      "shouldShowMoreMessage": false
+    }
+  ],
+  "totalNumberOfSearchResultPages": 5,
+  "currentSearchResultsPage": 1,
+  "totalCount": 487,
+  "apiLimitReached": false
+}

@@ -1,0 +1,31 @@
+{
+  "root": {
+    "path": "",
+    "on_null": "return_empty"
+  },
+  "pipeline": [
+    {
+      "op": "copy",
+      "from": "foundMessagesFromSearch[].message",
+      "to": "reduced_results.messages"
+    },
+    {
+      "op": "copy",
+      "from": "foundMessagesFromSearch[].channelName",
+      "to": "reduced_results.channel_names"
+    },
+    {
+      "op": "copy",
+      "from": "foundMessagesFromSearch[].username",
+      "to": "reduced_results.usernames"
+    },
+    {
+      "op": "prune",
+      "strategy": "empty_values",
+      "target": "reduced_results"
+    }
+  ],
+  "output": {
+    "result": "$working.reduced_results"
+  }
+}
